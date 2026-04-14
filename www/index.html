@@ -19,8 +19,34 @@
         
         .center-btn { background-color: rgba(0, 255, 255, 0.3); font-weight: bold; border-radius: 15px; padding: 20px 40px; width: auto; height: auto; font-size: 32px; z-index: 10; }
         
-        #mazeControls { position: absolute; top: calc(50% - 110px); left: 50%; transform: translate(-50%, -50%); width: 220px; height: 220px; display: none; grid-template-areas: ". up ." "left . right" ". down ."; gap: 5px; pointer-events: auto; }
-        .maze-btn { width: 70px; height: 70px; background-color: rgba(255, 255, 0, 0.4); border: 3px solid rgba(255, 255, 0, 0.8); border-radius: 50%; color: yellow; font-size: 32px; display: flex; justify-content: center; align-items: center; opacity: 0.3; cursor: default; }
+        #mazeControls { 
+    position: absolute; 
+    top: calc(50% - 110px); 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 190px; 
+    height: 190px; 
+    display: none; 
+    grid-template-columns: 60px 60px 60px; /* 3열 크기 완벽 고정 */
+    grid-template-rows: 60px 60px 60px;    /* 3행 크기 완벽 고정 */
+    grid-template-areas: ". up ." "left . right" ". down ."; 
+    gap: 5px; 
+    pointer-events: auto; 
+}
+        .maze-btn { 
+    width: 60px; 
+    height: 60px; 
+    background-color: rgba(255, 255, 0, 0.4); 
+    border: 3px solid rgba(255, 255, 0, 0.8); 
+    border-radius: 50%; 
+    color: yellow; 
+    font-size: 28px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    opacity: 0.3; 
+    cursor: default; 
+}
         .maze-btn.active { opacity: 1; cursor: pointer; background-color: rgba(0, 255, 255, 0.5); color: cyan; border-color: rgba(0, 255, 255, 1); box-shadow: 0 0 15px cyan; }
         .maze-btn.active:active { background-color: rgba(0, 255, 255, 0.8); }
         #mazeUp { grid-area: up; } #mazeDown { grid-area: down; } #mazeLeft { grid-area: left; } #mazeRight { grid-area: right; }
