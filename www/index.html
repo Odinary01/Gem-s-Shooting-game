@@ -266,18 +266,28 @@
                 for (let i = 0; i < numAsteroids; i++) asteroids.push({ x: Math.random() * (canvas.width - 120), y: Math.random() * 150 + 200, width: 120, height: 120, hp: 10 });
             }
             
-            let rows = isTrap ? 5 : 3; let cols = isTrap ? 8 : 6; let startY = 60; 
-            let spawnBoss = false; let spawnMidBoss = false; let midBossCount = 0;
+                       let rows = isTrap ? 5 : 3; let cols = isTrap ? 8 : 6; let startY = 60; 
+            let bossCount = 0; let spawnMidBoss = false; let midBossCount = 0;
             
             if (stage >= 10) { 
                 let rand = Math.random(); 
-                if (rand < 0.20) { spawnBoss = true; spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; }
+                if (rand < 0.20) { 
+                    // 50 스테이지 이상이면 1~3마리, 그 미만이면 1마리 생성
+                    bossCount = stage >= 50 ? Math.floor(Math.random() * 3) + 1 : 1; 
+                    spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; 
+                }
                 else if (rand < 0.75) { spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; }
             }
             
-            if (spawnBoss) {
+            if (bossCount > 0) {
                 let bWidth = 30, bHeight = 120, bHp = 50 * enemyHpMod; 
-                enemies.push({ type: 'boss', x: canvas.width / 2 - bWidth / 2, y: 30, width: bWidth, height: bHeight, speedX: 1 * enemySpeedMod, hp: bHp });
+                let spacing = 80; // 보스들 사이의 가로 간격
+                let startX = (canvas.width - (bossCount * spacing)) / 2;
+                
+                for (let i = 0; i < bossCount; i++) {
+                    // 계산된 간격(startX)을 기준으로 보스들을 나란히 배치
+                    enemies.push({ type: 'boss', x: startX + i * spacing + 25, y: 30, width: bWidth, height: bHeight, speedX: 1 * enemySpeedMod, hp: bHp });
+                }
             }
             
             if (spawnMidBoss) {
