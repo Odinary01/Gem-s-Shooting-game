@@ -250,8 +250,10 @@
 
         function loop() { update(); draw(); requestAnimationFrame(loop); }
         function handleStartScreen() { if (state === 'start') { initAudio(); resetGame(); } }
+               const container = document.getElementById('gameContainer'); 
         container.addEventListener('mousedown', handleStartScreen); container.addEventListener('touchstart', handleStartScreen);
         loop();
     </script>
 </body>
 </html>
+
