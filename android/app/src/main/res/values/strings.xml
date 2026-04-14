@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Gem\'s shooting game</string>
     <string name="title_activity_main">Gem\'s shooting game</string>
-    <string name="package_name">com.mygame.gsg</string>
-    <string name="custom_url_scheme">com.mygame.gsg</string>
+    <string name="package_name">com.odinarygame.gsg</string>
+    <string name="custom_url_scheme">com.odinarygame.gsg</string>
 </resources>

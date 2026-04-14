@@ -1,4 +1,4 @@
-package com.mygame.gsg;
+package com.odinarygame.gsg;
 
 import com.getcapacitor.BridgeActivity;
 

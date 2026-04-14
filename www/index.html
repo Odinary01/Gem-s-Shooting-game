@@ -14,7 +14,7 @@
         .control-btn { background-color: rgba(255, 255, 255, 0.3); border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255, 255, 255, 0.9); user-select: none; -webkit-user-select: none; cursor: pointer; transition: background-color 0.1s; }
         .control-btn:active { background-color: rgba(255, 255, 255, 0.6); }
         
-        #btnLeft, #btnRight { width: 120px; height: 120px; font-size: 48px; }
+        #btnLeft, #btnRight { width: 80px; height: 80px; font-size: 32px; }
         #btnShoot { width: 60px; height: 60px; font-size: 24px; }
         
         .center-btn { background-color: rgba(0, 255, 255, 0.3); font-weight: bold; border-radius: 15px; padding: 20px 40px; width: auto; height: auto; font-size: 32px; z-index: 10; }
@@ -30,7 +30,7 @@
 </head>
 <body>
     <div id="gameContainer">
-        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <canvas id="gameCanvas" width="600" height="720"></canvas>
         <div id="mobileControls">
             <div class="control-group"><div class="control-btn" id="btnLeft">←</div><div class="control-btn" id="btnRight">→</div></div>
             <div class="control-group"><div class="control-btn" id="btnShoot">🔥</div></div>
@@ -104,7 +104,7 @@
         let currentWallThickness = 0; 
         
         let currentShootCooldown = baseShootCooldown;
-        let player = { x: 280, y: 530, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
+        let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
         let bullets = [], enemyBullets = [], enemies = [], asteroids = [], virtualKeys = {}, currentExits = [true, true, true, true];
         let activeEffectText = "", effectDisplayTimer = 0, enemySpeedMod = 1, enemyHpMod = 1, silenceUntil = 0, hitBlinkTimer = 0, scoreSaved = false;
 
@@ -270,7 +270,7 @@
        function resetGame() {
             state = 'playing'; score = 0; lives = 3; stage = 1; uiPosition = 'bottom'; isVoidArea = false;
             permanentWeaponSpeedLevel = 1; portOverheatMultiplier = 1; permanentPlayerSpeed = basePlayerSpeed; currentWallThickness = 0;
-            player = { x: 280, y: 530, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
+            player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
             bullets = []; enemyBullets = []; currentExits = [true, true, true, true]; asteroids = [];
             activeEffectText = ""; effectDisplayTimer = 0; enemySpeedMod = 1; enemyHpMod = 1; silenceUntil = 0; hitBlinkTimer = 0; scoreSaved = false; virtualKeys = {};
             mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; restartBtn.style.display = 'none';
@@ -471,7 +471,7 @@
                 
                 if (Math.floor(Date.now() / 500) % 2 === 0) { ctx.fillStyle = 'yellow'; ctx.font = '24px Arial'; ctx.textAlign = 'center'; ctx.fillText("- TOUCH TO START -", cx, cy + 120); }
                 
-                ctx.drawImage(images.player, 280, 530, 40, 40);
+                ctx.drawImage(images.player, 280, 650, 40, 40);
                 ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.textAlign = 'left'; ctx.fillText(`Stage: ${lastPlayInfo.stage || 1} | Score: ${lastPlayInfo.score || 0} | Armor: ${lastPlayInfo.lives !== undefined ? lastPlayInfo.lives : 3}`, 10, canvas.height - 10);
                 return; 
             }
@@ -524,8 +524,8 @@
                 if (effectDisplayTimer > 0) { ctx.fillStyle = activeEffectText.includes("✨") ? '#00ff00' : (activeEffectText.includes("💀") ? '#ff0000' : '#ffff00'); ctx.textAlign = 'center'; ctx.font = 'bold 24px Arial'; ctx.fillText(activeEffectText, canvas.width / 2, canvas.height / 2); }
                 if (hitBlinkTimer > 0) { let blinkAlpha = Math.pow(Math.sin((60 - hitBlinkTimer) / 60 * Math.PI * 4), 2) * 0.8; ctx.fillStyle = `rgba(0, 0, 0, ${blinkAlpha})`; ctx.fillRect(0, 0, canvas.width, canvas.height); }
             } else if (state === 'choosing') { 
-                ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", canvas.width / 2, canvas.height / 2 - 160); 
-                ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", canvas.width / 2, canvas.height / 2 - 110); 
+                ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", canvas.width / 2, canvas.height / 2 - 240); 
+                ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", canvas.width / 2, canvas.height / 2 - 190); 
             } else if (state === 'gameover' || state === 'missioncomplete') {
                 ctx.fillStyle = state === 'missioncomplete' ? 'yellow' : 'red'; ctx.textAlign = 'center'; ctx.font = '40px Arial'; 
                 ctx.fillText(state === 'missioncomplete' ? "I SALUTE YOU!" : "GAME OVER", canvas.width / 2, 100); 
