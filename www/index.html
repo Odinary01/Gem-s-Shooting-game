@@ -155,7 +155,7 @@ function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
         let state = 'start', score = 0, lives = 3, stage = 1; let isPaused = false;
         
         // 밸런스 및 구역 한정 변수들 (핵심)
-        const basePlayerSpeed = 5, baseShootCooldown = 400;
+        const basePlayerSpeed = 2, baseShootCooldown = 400;
         let permanentWeaponSpeedLevel = 0, permanentPlayerSpeed = basePlayerSpeed, portOverheatMultiplier = 1, currentWallThickness = 0;
         let baseEnemySpeedMod = 1, baseEnemyHpMod = 1, stageEnemySpeedMod = 0, stageEnemyHpMod = 0, enemySpeedMod = 1, enemyHpMod = 1;
         let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
