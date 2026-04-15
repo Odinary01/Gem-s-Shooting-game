@@ -10,31 +10,36 @@
         canvas { background-color: black; border: 2px solid #555; max-width: 100%; max-height: 100%; touch-action: none; }
         
 #mobileControls {
-  position: absolute;
-  bottom: 0;
-  left: 0; /* 중앙 정렬 대신 left: 0과 width: 100% 사용 */
-  width: 100%;
-  height: 220px;
-  display: none; /* 타이틀 화면에서 기본적으로 숨김 처리 */
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px; /* 여백을 줄여서 화면 밖으로 밀리는 현상 방지 */
-  box-sizing: border-box;
-  pointer-events: none;
-  z-index: 50;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
+    height: 220px;
+    display: none; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 50;
 }
-        .control-group { 
-            display: flex; gap: 10px; /* 버튼 사이 간격 축소 */
-            pointer-events: auto; align-items: center; 
-        }
-            width: 100%; max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
-            height: 220px; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 30px; box-sizing: border-box; 
-            pointer-events: none; }
-        .control-group { display: flex; gap: 20px; pointer-events: auto; align-items: center; }
-        .control-btn { background-color: rgba(255, 255, 255, 0.3); border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: rgba(255, 255, 255, 0.9); user-select: none; -webkit-user-select: none; cursor: pointer; transition: background-color 0.1s; }
-        .control-btn:active { background-color: rgba(255, 255, 255, 0.6); }
-        
+
+.control-group {
+    display: flex; 
+    gap: 10px; /* 버튼 사이 간격 축소 */
+    pointer-events: auto; 
+    align-items: center;
+}
+
+.control-btn { 
+    background-color: rgba(255, 255, 255, 0.3); 
+    border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+.control-btn:active { 
+    background-color: rgba(255, 255, 255, 0.6); 
+}        
         #btnLeft, #btnRight { width: 80px; height: 80px; font-size: 32px; }
         #btnShoot { width: 60px; height: 60px; font-size: 24px; }
         
