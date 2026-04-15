@@ -32,14 +32,14 @@
     align-items: center;
 }
 
-.control-btn { 
-    background-color: rgba(255, 255, 255, 0.3); 
-    border: 3px solid rgba(255, 255, 255, 0.5);
+.control-btn { .control-btn {
+    background-color: transparent;
+    border: none;
 }
 
-.control-btn:active { 
-    background-color: rgba(255, 255, 255, 0.6); 
-}        
+.control-btn:active {
+    background-color: transparent;
+}
         #btnLeft, #btnRight { width: 80px; height: 80px; font-size: 32px; }
         #btnShoot { width: 60px; height: 60px; font-size: 24px; }
         
@@ -164,7 +164,7 @@ function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
         let state = 'start', score = 0, lives = 3, stage = 1; let isPaused = false;
         
         // 밸런스 및 구역 한정 변수들 (핵심)
-        const basePlayerSpeed = 2, baseShootCooldown = 400;
+        const basePlayerSpeed = 1, baseShootCooldown = 400;
         let permanentWeaponSpeedLevel = 0, permanentPlayerSpeed = basePlayerSpeed, portOverheatMultiplier = 1, currentWallThickness = 0;
         let baseEnemySpeedMod = 1, baseEnemyHpMod = 1, stageEnemySpeedMod = 0, stageEnemyHpMod = 0, enemySpeedMod = 1, enemyHpMod = 1;
         let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
@@ -306,7 +306,7 @@ function spawnEnemies(isTrap) {
                         e.speedX *= -1; e.y += 20; e.x = e.x <= 0 ? 0 : canvas.width - e.width;
                     }
                     if (stage > 3 && Math.random() < fireRate * enemySpeedMod) {
-                        enemyBullets.push({ x: e.x + e.width / 2 - 2, y: e.y + e.height, width: 4, height: 10, speedY: 4 * enemySpeedMod });
+                        enemyBullets.push({ x: e.x + e.width / 2 - 2, y: e.y + e.height, width: 4, height: 10, speedY: 2 * enemySpeedMod });
                     }
                     
                     let enemyDestroyed = false;
@@ -329,7 +329,7 @@ function spawnEnemies(isTrap) {
                 let actualCooldown = (baseShootCooldown / wsMult[permanentWeaponSpeedLevel]) * portOverheatMultiplier;
                 if (virtualKeys[' '] && Date.now() - lastShootTime > actualCooldown && Date.now() >= silenceUntil) {
                     playShootSound();
-                    let bSpeed = -7, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
+                    let bSpeed = -3, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
                     let cX = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
                     if (player.weaponLevel === 1) bList.push({ x: cX, y: yTop });
                     else if (player.weaponLevel === 2) { bList.push({ x: lX + 8, y: yBot }); bList.push({ x: rX - 8, y: yBot }); }
