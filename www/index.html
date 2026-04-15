@@ -8,15 +8,15 @@
         body { background-color: #222; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; }
         #gameContainer { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; padding-bottom: 220px; box-sizing: border-box; }
         canvas { background-color: black; border: 2px solid #555; max-width: 100%; max-height: 100%; touch-action: none; }
-        
-#mobileControls {
+
+    #mobileControls {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
     height: 220px;
-    display: none; 
+    display: none;
     justify-content: space-between;
     align-items: center;
     padding: 0 30px;
@@ -26,13 +26,13 @@
 }
 
 .control-group {
-    display: flex; 
+    display: flex;
     gap: 10px; /* 버튼 사이 간격 축소 */
-    pointer-events: auto; 
+    pointer-events: auto;
     align-items: center;
 }
 
-.control-btn { .control-btn {
+.control-btn {
     background-color: transparent;
     border: none;
 }
@@ -40,29 +40,28 @@
 .control-btn:active {
     background-color: transparent;
 }
-        #btnLeft, #btnRight { width: 80px; height: 80px; font-size: 32px; }
-        #btnShoot { width: 60px; height: 60px; font-size: 24px; }
-        
-        .center-btn { background-color: rgba(0, 255, 255, 0.3); font-weight: bold; border-radius: 15px; padding: 20px 40px; width: auto; height: auto; font-size: 32px; z-index: 10; }
-        
-               #mazeControls { position: absolute; top: calc(50% - 110px); left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; display: none; grid-template-columns: 60px 60px 60px; grid-template-rows: 60px 60px 60px; grid-template-areas: ". up ." "left . right" ". down ."; gap: 10px; pointer-events: auto; }
-        .maze-btn { width: 60px; height: 60px; background-color: rgba(0, 255, 255, 0.2); border: 3px solid rgba(0, 255, 255, 0.8); border-radius: 50%; color: white; font-size: 28px; display: flex; justify-content: center; align-items: center; opacity: 0.5; cursor: default; }
-       /* --- 설정 창 및 톱니바퀴 버튼 전용 CSS --- */
-        #btnSettings { 
-            position: absolute; top: 15px; right: 15px; 
-            width: 45px; height: 45px; font-size: 24px; 
-            background-color: rgba(255,255,255,0.2); border: 2px solid white; 
-            border-radius: 50%; color: white; display: flex; 
-            justify-content: center; align-items: center; cursor: pointer; 
-            z-index: 999; pointer-events: auto !important; /* 터치 무조건 활성화 */
-        }
-        #settingsModal { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 300px; background-color: rgba(0, 0, 0, 0.9); 
-            border: 3px solid #00ffff; border-radius: 15px; padding: 25px; 
-            display: none; flex-direction: column; align-items: center; gap: 25px; 
-            z-index: 1000; pointer-events: auto !important; 
-        }
+
+/* 중간 #btnLeft, #btnRight, .center-btn, #mazeControls 등은 기존 유지 */
+
+#btnSettings {
+    position: absolute; top: 15px; right: 15px;
+    width: 45px; height: 45px;
+    font-size: 24px;
+    background-color: rgba(255,255,255,0.2); border: 2px solid white;
+    border-radius: 50%; color: white; display: flex;
+    justify-content: center; align-items: center; cursor: pointer;
+    z-index: 999; pointer-events: auto !important; /* 터치 무조건 활성화 */
+}
+
+#settingsModal {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px; background-color: rgba(0, 0, 0, 0.9);
+    border: 3px solid #00ffff; border-radius: 15px; padding: 25px;
+    display: none; flex-direction: column; align-items: center; gap: 25px;
+    z-index: 1000; pointer-events: auto !important;
+}
+
         #settingsModal h2 { margin: 0; color: yellow; font-size: 28px; }
         .slider-container { display: flex; flex-direction: column; width: 100%; color: white; text-align: left; font-size: 18px; gap: 10px; }
         .modal-btn { background-color: #444; border: 2px solid white; color: white; padding: 12px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
@@ -646,4 +645,3 @@ else playRandomBgm();
     </script>
 </body>
 </html>
-
