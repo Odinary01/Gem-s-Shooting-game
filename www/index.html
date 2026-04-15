@@ -9,16 +9,20 @@
         #gameContainer { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; padding-bottom: 220px; box-sizing: border-box; }
         canvas { background-color: black; border: 2px solid #555; max-width: 100%; max-height: 100%; touch-action: none; }
         
-               #mobileControls { 
-            position: absolute; bottom: 0; 
-            left: 50%; transform: translateX(-50%); /* 화면 중앙에 완벽히 고정 */
-       #mobileControls { 
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 220px; 
-            display: none; /* 타이틀 화면에서 기본적으로 숨김 처리 */
-            justify-content: space-between; align-items: center; 
-            padding: 0 10px; /* 여백을 줄여서 화면 밖으로 밀리는 현상 방지 */
-            box-sizing: border-box; pointer-events: none; z-index: 50; 
-        }
+#mobileControls {
+  position: absolute;
+  bottom: 0;
+  left: 0; /* 중앙 정렬 대신 left: 0과 width: 100% 사용 */
+  width: 100%;
+  height: 220px;
+  display: none; /* 타이틀 화면에서 기본적으로 숨김 처리 */
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px; /* 여백을 줄여서 화면 밖으로 밀리는 현상 방지 */
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 50;
+}
         .control-group { 
             display: flex; gap: 10px; /* 버튼 사이 간격 축소 */
             pointer-events: auto; align-items: center; 
@@ -187,7 +191,7 @@ function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
         // --- 앱 실행 시 저장된 설정 불러오기 ---
         let savedVolume = localStorage.getItem('mazeGalagaVolume');
         if (savedVolume !== null) {
-            bgmAudio.volume = parseFloat(savedVolume);
+            bgmAudio.volume = parseFloat(savedVolume) * 0.2;
             bgmVolumeSlider.value = savedVolume;
         }
         let savedMute = localStorage.getItem('mazeGalagaMuted');
@@ -213,22 +217,8 @@ function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 
         // --- 볼륨 슬라이더 조절 및 상태 저장 ---
         bgmVolumeSlider.addEventListener('input', (e) => {
-            bgmAudio.volume = e.target.value;
+            bgmAudio.volume = e.target.value * 0.2;
             localStorage.setItem('mazeGalagaVolume', e.target.value); // 볼륨 수치 저장
-        });
-
-        // --- 톱니바퀴 및 계속하기 버튼 로직 ---
-        function openSettings(e) {
-            e.preventDefault(); e.stopPropagation();
-            if (state === 'playing') isPaused = true;
-            settingsModal.style.display = 'flex';
-        }
-        document.getElementById('btnSettings').addEventListener('mousedown', openSettings);
-        document.getElementById('btnSettings').addEventListener('touchstart', openSettings, {passive: false});
-
-        document.getElementById('btnResume').addEventListener('click', () => {
-            isPaused = false;
-            settingsModal.style.display = 'none';
         });
 
         ['mazeUp', 'mazeRight', 'mazeDown', 'mazeLeft'].forEach((id, idx) => {
@@ -614,19 +604,13 @@ else playRandomBgm();
         }
         function handleStartScreen() { if (state === 'start') { initAudio(); resetGame(); } }
         
-        // --- 1. 게임 오버 시 타이틀로 돌아가는 기존 버튼 ---
+        // --- 게임 오버 시 타이틀로 돌아가는 기존 버튼 ---
         document.getElementById('restartBtn').addEventListener('click', (e) => {
             e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        // --- 2. 볼륨 슬라이더 조절 ---
-        bgmVolumeSlider.addEventListener('input', (e) => {
-            bgmAudio.volume = e.target.value;
-            localStorage.setItem('mazeGalagaVolume', e.target.value);
-        });
-
-        // --- 3. 톱니바퀴 열기 및 계속하기 버튼 로직 ---
+        // --- 톱니바퀴 열기 및 계속하기 버튼 로직 ---
         function openSettings(e) {
             e.preventDefault(); e.stopPropagation();
             if (state === 'playing') isPaused = true;
@@ -640,7 +624,7 @@ else playRandomBgm();
             settingsModal.style.display = 'none';
         });
 
-        // --- 4. 설정 창에서 타이틀로 돌아가기 (컨트롤러 숨김 포함) ---
+        // --- 설정 창에서 타이틀로 돌아가기 (컨트롤러 숨김 포함) ---
         document.getElementById('btnExitToTitle').addEventListener('click', () => {
             isPaused = false;
             settingsModal.style.display = 'none';
