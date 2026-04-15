@@ -9,40 +9,91 @@
         #gameContainer { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; padding-bottom: 220px; box-sizing: border-box; }
         canvas { background-color: black; border: 2px solid #555; max-width: 100%; max-height: 100%; touch-action: none; }
 
-    #mobileControls {
+   #mobileControls {
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   width: 100%;
+   max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
+   height: 220px;
+   display: none;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0 30px;
+   box-sizing: border-box;
+   pointer-events: none;
+   z-index: 50;
+   padding: 0 20px; /* 전체 컨트롤러 그룹과 화면 가장자리 간격 조정 */
+}
+.control-group {
+   display: flex;
+   gap: 10px; /* 버튼 사이 간격 축소 */
+   pointer-events: auto;
+   align-items: center;
+   gap: 15px; /* 이동 버튼 사이 간격 축소 (원하는 대로 조절) */
+}
+.control-btn {
+   background-color: transparent;
+   border: none;
+   width: 60px; /* 버튼 자체의 클릭 영역 크기 */
+   height: 60px;
+   background-color: transparent; /* 완전 투명 */
+   border: none; /* 테두리 제거 */
+   overflow: hidden; /* 이미지가 버튼 영역을 벗어나면 숨김 */
+}
+.control-btn:active {
+   background-color: transparent;
+}
+.control-btn img {
+    width: 100%; /* 버튼 크기에 맞춰 이미지 크기 조정 */
+    height: 100%;
+    object-fit: contain; /* 비율 유지하며 버튼 안에 맞춤 */
+}
+#btnFire {
+    background-color: rgba(255, 255, 255, 0.3); /* 발사 버튼만 약간 불투명하게 유지 (선택사항) */
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+    font-weight: bold;
+}
+/* 메이즈 컨트롤러 스타일 수정 */
+#mazeControls {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
+    top: 50%; /* 화면 중앙 배치 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px;
     height: 220px;
     display: none;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    box-sizing: border-box;
-    pointer-events: none;
+    grid-template-columns: 70px 70px 70px;
+    grid-template-rows: 70px 70px 70px;
+    grid-template-areas: 
+        ". up ."
+        "left . right"
+        ". down .";
+    gap: 5px;
     z-index: 50;
 }
-
-.control-group {
-    display: flex;
-    gap: 10px; /* 버튼 사이 간격 축소 */
-    pointer-events: auto;
-    align-items: center;
+.maze-btn {
+    width: 70px;
+    height: 70px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent; /* 배경색 투명 */
+    border: none; /* 테두리 제거 */
+    opacity: 0.6;
+    transition: transform 0.1s, opacity 0.2s;
+}
+.maze-btn.active {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px cyan); /* 활성화 시 빛나는 효과 */
 }
 
-.control-btn {
-    background-color: transparent;
-    border: none;
-}
-
-.control-btn:active {
-    background-color: transparent;
-}
-
-/* 중간 #btnLeft, #btnRight, .center-btn, #mazeControls 등은 기존 유지 */
-
+/* 각 방향에 이미지 할당 */
+#mazeUp { grid-area: up; background-image: url('uploaded:image.png-70bfdde5-209e-4ab2-941c-6b2d7cedadd1'); }
+#mazeDown { grid-area: down; background-image: url('uploaded:image.png-0307a2b4-76f5-4b1c-b079-585a6c3ad556'); }
+#mazeLeft { grid-area: left; background-image: url('uploaded:image.png-34ebaa3c-633f-4dc1-b695-a4b166e67cbd'); }
+#mazeRight { grid-area: right; background-image: url('uploaded:image.png-e9535615-f267-4077-99d6-72041ba05770'); }
 #btnSettings {
     position: absolute; top: 15px; right: 15px;
     width: 45px; height: 45px;
@@ -89,24 +140,21 @@
             <button class="modal-btn exit" id="btnExitToTitle">Exit to Title</button>
         </div>
 
-        <div id="mobileControls">
-            <div class="control-group">
-                <div class="control-btn" id="btnLeft">←</div>
-                <div class="control-btn" id="btnRight">→</div>
-            </div> 
-            <div class="control-group">
-                <div class="control-btn" id="btnMusic" style="font-size: 18px; width: 45px; height: 45px;">🎵</div>
-                <div class="control-btn" id="btnShoot">🔥</div>
-            </div>
-        </div>
-
-        <div id="mazeControls">
-            <div class="maze-btn" id="mazeUp">↑</div>
-            <div class="maze-btn" id="mazeLeft">←</div>
-            <div class="maze-btn" id="mazeRight">→</div>
-            <div class="maze-btn" id="mazeDown">↓</div>
-        </div>
-
+<div id="mobileControls">
+    <div class="control-group">
+        <div class="control-btn" id="btnUp"><img src="uploaded:image.png-70bfdde5" alt="Up"></div>
+        <div class="control-btn" id="btnLeft"><img src="uploaded:image.png-34ebaa3c" alt="Left"></div>
+        <div class="control-btn" id="btnDown"><img src="uploaded:image.png-0307a2b4" alt="Down"></div>
+        <div class="control-btn" id="btnRight"><img src="uploaded:image.png-e9535615" alt="Right"></div>
+    </div>
+    <div class="control-btn" id="btnFire">🔥</div>
+</div>
+<div id="mazeControls">
+    <div class="maze-btn" id="mazeUp"></div>
+    <div class="maze-btn" id="mazeLeft"></div>
+    <div class="maze-btn" id="mazeRight"></div>
+    <div class="maze-btn" id="mazeDown"></div>
+</div>
         <div class="control-btn center-btn" id="restartBtn">TO TITLE</div>
     </div>
 <script>
@@ -297,14 +345,14 @@ function spawnEnemies(isTrap) {
                 if (player.x < currentWallThickness) player.x = currentWallThickness;
                 if (player.x > canvas.width - player.width - currentWallThickness) player.x = canvas.width - player.width - currentWallThickness;
                 
-                let fireRate = 0.0002 + Math.floor(stage / 5) * 0.0002;
+                let fireRate = 0.0002 + Math.floor(stage / 5) + 0.2;
                 for (let j = enemies.length - 1; j >= 0; j--) {
                     let e = enemies[j];
                     e.x += e.speedX;
                     if (e.x <= 0 || e.x + e.width >= canvas.width) {
                         e.speedX *= -1; e.y += 20; e.x = e.x <= 0 ? 0 : canvas.width - e.width;
                     }
-                    if (stage > 3 && Math.random() < fireRate * enemySpeedMod) {
+                    if (stage > 3 && Math.random() < fireRate + enemySpeedMod) {
                         enemyBullets.push({ x: e.x + e.width / 2 - 2, y: e.y + e.height, width: 4, height: 10, speedY: 2 * enemySpeedMod });
                     }
                     
@@ -590,8 +638,14 @@ else playRandomBgm();
                 player.shield = false; 
             }
         }
-        function loop() { update(); draw(); requestAnimationFrame(loop); }
-        function handleStartScreen() { if (state === 'start') { initAudio(); resetGame(); } }
+    function loop() { update(); draw(); requestAnimationFrame(loop); }
+    function handleStartScreen(e) { 
+    if (e.target.id === 'btnSettings') return; // 설정 버튼 클릭 시 게임 시작 방지
+    if (state === 'start') { 
+        initAudio(); 
+        resetGame(); 
+    } 
+}
         const container = document.getElementById('gameContainer');
         container.addEventListener('mousedown', handleStartScreen); container.addEventListener('touchstart', handleStartScreen);
         document.getElementById('restartBtn').addEventListener('click', (e) => {
