@@ -19,8 +19,16 @@
         
         .center-btn { background-color: rgba(0, 255, 255, 0.3); font-weight: bold; border-radius: 15px; padding: 20px 40px; width: auto; height: auto; font-size: 32px; z-index: 10; }
         
-        #mazeControls { position: absolute; top: calc(50% - 110px); left: 50%; transform: translate(-50%, -50%); width: 260px; height: 260px; display: none; grid-template-columns: 80px 80px 80px; grid-template-rows: 80px 80px 80px; grid-template-areas: ". up ." "left . right" ". down ."; gap: 10px; pointer-events: auto; }
-        .maze-btn { width: 80px; height: 80px; background-color: rgba(0, 255, 255, 0.2); border: 3px solid rgba(0, 255, 255, 0.8); border-radius: 50%; color: white; font-size: 36px; display: flex; justify-content: center; align-items: center; opacity: 0.5; cursor: default; }
+               #mazeControls { position: absolute; top: calc(50% - 110px); left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; display: none; grid-template-columns: 60px 60px 60px; grid-template-rows: 60px 60px 60px; grid-template-areas: ". up ." "left . right" ". down ."; gap: 10px; pointer-events: auto; }
+        .maze-btn { width: 60px; height: 60px; background-color: rgba(0, 255, 255, 0.2); border: 3px solid rgba(0, 255, 255, 0.8); border-radius: 50%; color: white; font-size: 28px; display: flex; justify-content: center; align-items: center; opacity: 0.5; cursor: default; }
+/* --- 설정 창 및 톱니바퀴 버튼 전용 CSS 추가 --- */
+        #btnSettings { position: absolute; top: 10px; right: 10px; width: 45px; height: 45px; font-size: 24px; background-color: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; }
+        #settingsModal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background-color: rgba(0, 0, 0, 0.9); border: 3px solid #00ffff; border-radius: 15px; padding: 25px; display: none; flex-direction: column; align-items: center; gap: 25px; z-index: 200; pointer-events: auto; }
+        #settingsModal h2 { margin: 0; color: yellow; font-size: 28px; }
+        .slider-container { display: flex; flex-direction: column; width: 100%; color: white; text-align: left; font-size: 18px; gap: 10px; }
+        .modal-btn { background-color: #444; border: 2px solid white; color: white; padding: 12px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+        .modal-btn.exit { background-color: #aa0000; border-color: #ff5555; }
+
         .maze-btn.active { opacity: 1; cursor: pointer; background-color: rgba(0, 255, 255, 0.5); color: white; box-shadow: 0 0 15px cyan; border-color: rgba(0, 255, 255, 1); }
         .maze-btn.active:active { background-color: rgba(0, 255, 255, 0.8); }
         #mazeUp { grid-area: up; } #mazeDown { grid-area: down; } #mazeLeft { grid-area: left; } #mazeRight { grid-area: right; }
@@ -32,13 +40,25 @@
     <div id="gameContainer">
         <canvas id="gameCanvas" width="600" height="720"></canvas>
                <div id="mobileControls">
+                   <div id="btnSettings">⚙️</div>
+        <div id="settingsModal">
+            <h2>SETTINGS</h2>
+            <div class="slider-container">
+                <label for="bgmVolume">BGM Volume</label>
+                <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="1">
+            </div>
+            <button class="modal-btn" id="btnResume">Resume Game</button>
+            <button class="modal-btn exit" id="btnExitToTitle">Exit to Title</button>
+        </div>
+
+        <div id="mobileControls">
             <div class="control-group"><div class="control-btn" id="btnLeft">←</div><div class="control-btn" id="btnRight">→</div></div> 
             <div class="control-group">
-                <div class="control-btn" id="btnMusic" style="font-size: 24px; width: 60px; height: 60px;">🎵</div>
+                <div class="control-btn" id="btnMusic" style="font-size: 18px; width: 45px; height: 45px; margin-right: 10px;">🎵</div>
                 <div class="control-btn" id="btnShoot">🔥</div>
             </div>
         </div>
-        <div id="mazeControls">
+<div id="mazeControls">
             <div class="maze-btn" id="mazeUp">↑</div><div class="maze-btn" id="mazeLeft">←</div><div class="maze-btn" id="mazeRight">→</div><div class="maze-btn" id="mazeDown">↓</div> 
         </div>
         <div class="control-btn center-btn" id="restartBtn">TO TITLE</div>
@@ -94,7 +114,7 @@ function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 
         const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
         const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
-        let state = 'start', score = 0, lives = 3, stage = 1;
+        let state = 'start', score = 0, lives = 3, stage = 1; let isPaused = false;
         
         // 밸런스 및 구역 한정 변수들 (핵심)
         const basePlayerSpeed = 5, baseShootCooldown = 400;
@@ -508,8 +528,52 @@ else playRandomBgm();
             e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
-        loop();
+        loop(); 
+
+        // 게임 루프에 일시정지 로직 반영 (기존 loop 함수 교체)
+        function loop() { 
+            if (!isPaused) update(); 
+            draw(); 
+            requestAnimationFrame(loop); 
+        }
+
+         // --- 설정 창 및 볼륨 조절 로직 추가 ---
+        const settingsModal = document.getElementById('settingsModal');
+        const bgmVolumeSlider = document.getElementById('bgmVolume');
+
+        // 톱니바퀴 누르면 일시정지 및 창 열기
+        document.getElementById('btnSettings').addEventListener('mousedown', (e) => {
+            e.preventDefault(); e.stopPropagation();
+            if (state === 'playing') isPaused = true;
+            settingsModal.style.display = 'flex';
+        });
+        document.getElementById('btnSettings').addEventListener('touchstart', (e) => {
+            e.preventDefault(); e.stopPropagation();
+            if (state === 'playing') isPaused = true;
+            settingsModal.style.display = 'flex';
+        }, {passive: false});
+
+        // 계속하기
+        document.getElementById('btnResume').addEventListener('click', () => {
+            isPaused = false;
+            settingsModal.style.display = 'none';
+        });
+
+        // 타이틀로 돌아가기 (게임 종료 버튼)
+        document.getElementById('btnExitToTitle').addEventListener('click', () => {
+            isPaused = false;
+            settingsModal.style.display = 'none';
+            state = 'start';
+            stopBgm(); // 타이틀로 가면 BGM 끄기
+            score = 0; lives = 3; stage = 1;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // 볼륨 슬라이더 조절
+        bgmVolumeSlider.addEventListener('input', (e) => {
+            bgmAudio.volume = e.target.value;
+        });
+
     </script>
 </body>
 </html>
-
