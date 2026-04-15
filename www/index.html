@@ -12,6 +12,17 @@
                #mobileControls { 
             position: absolute; bottom: 0; 
             left: 50%; transform: translateX(-50%); /* 화면 중앙에 완벽히 고정 */
+       #mobileControls { 
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 220px; 
+            display: none; /* 타이틀 화면에서 기본적으로 숨김 처리 */
+            justify-content: space-between; align-items: center; 
+            padding: 0 10px; /* 여백을 줄여서 화면 밖으로 밀리는 현상 방지 */
+            box-sizing: border-box; pointer-events: none; z-index: 50; 
+        }
+        .control-group { 
+            display: flex; gap: 10px; /* 버튼 사이 간격 축소 */
+            pointer-events: auto; align-items: center; 
+        }
             width: 100%; max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
             height: 220px; display: flex; justify-content: space-between; 
             align-items: center; padding: 0 30px; box-sizing: border-box; 
@@ -166,22 +177,60 @@ function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
             el.addEventListener('mouseleave', (e) => { virtualKeys[vKey] = false; });
         }
         
-        bindTouch(document.getElementById('btnLeft'), 'ArrowLeft'); bindTouch(document.getElementById('btnRight'), 'ArrowRight'); bindTouch(document.getElementById('btnShoot'), ' ');
-	       // --- 기존 키 바인딩 코드 아래에 추가 ---
+        bindTouch(document.getElementById('btnLeft'), 'ArrowLeft'); bindTouch(document.getElementById('btnRight'), 'ArrowRight'); bindTouch(document.getElementById('btnShoot'), ' ')
+
+        // --- 기존 키 바인딩 코드 아래에 추가 ---
         const btnMusic = document.getElementById('btnMusic');
+        const settingsModal = document.getElementById('settingsModal');
+        const bgmVolumeSlider = document.getElementById('bgmVolume');
+
+        // --- 앱 실행 시 저장된 설정 불러오기 ---
+        let savedVolume = localStorage.getItem('mazeGalagaVolume');
+        if (savedVolume !== null) {
+            bgmAudio.volume = parseFloat(savedVolume);
+            bgmVolumeSlider.value = savedVolume;
+        }
+        let savedMute = localStorage.getItem('mazeGalagaMuted');
+        if (savedMute === 'true') {
+            isMusicMuted = true;
+            btnMusic.innerText = "🔇";
+            btnMusic.style.opacity = "0.5";
+        }
+
+        // --- 음악 음소거 토글 및 상태 저장 ---
         function toggleMusic(e) {
             e.preventDefault();
             isMusicMuted = !isMusicMuted;
             btnMusic.innerText = isMusicMuted ? "🔇" : "🎵";
             btnMusic.style.opacity = isMusicMuted ? "0.5" : "1";
-            if (isMusicMuted) {
-                pauseBgm();
-            } else {
-                if (state !== 'start' && !isVoidArea) playRandomBgm();
-            }
+            localStorage.setItem('mazeGalagaMuted', isMusicMuted); // 음소거 상태 저장
+            
+            if (isMusicMuted) pauseBgm();
+            else if (state !== 'start' && !isVoidArea) playRandomBgm();
         }
         btnMusic.addEventListener('mousedown', toggleMusic);
         btnMusic.addEventListener('touchstart', toggleMusic, {passive: false});
+
+        // --- 볼륨 슬라이더 조절 및 상태 저장 ---
+        bgmVolumeSlider.addEventListener('input', (e) => {
+            bgmAudio.volume = e.target.value;
+            localStorage.setItem('mazeGalagaVolume', e.target.value); // 볼륨 수치 저장
+        });
+
+        // --- 톱니바퀴 및 계속하기 버튼 로직 ---
+        function openSettings(e) {
+            e.preventDefault(); e.stopPropagation();
+            if (state === 'playing') isPaused = true;
+            settingsModal.style.display = 'flex';
+        }
+        document.getElementById('btnSettings').addEventListener('mousedown', openSettings);
+        document.getElementById('btnSettings').addEventListener('touchstart', openSettings, {passive: false});
+
+        document.getElementById('btnResume').addEventListener('click', () => {
+            isPaused = false;
+            settingsModal.style.display = 'none';
+        });
+
         ['mazeUp', 'mazeRight', 'mazeDown', 'mazeLeft'].forEach((id, idx) => {
             let dirs = ['up', 'right', 'down', 'left'];
             document.getElementById(id).addEventListener('click', (e) => { e.preventDefault(); initAudio(); makeChoice(idx, dirs[idx]); });
@@ -568,32 +617,18 @@ else playRandomBgm();
         const settingsModal = document.getElementById('settingsModal');
         const bgmVolumeSlider = document.getElementById('bgmVolume');
 
-        // 톱니바퀴 누르면 일시정지 및 창 열기
-        document.getElementById('btnSettings').addEventListener('mousedown', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            if (state === 'playing') isPaused = true;
-            settingsModal.style.display = 'flex';
-        });
-        document.getElementById('btnSettings').addEventListener('touchstart', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            if (state === 'playing') isPaused = true;
-            settingsModal.style.display = 'flex';
-        }, {passive: false});
-
-        // 계속하기
-        document.getElementById('btnResume').addEventListener('click', () => {
-            isPaused = false;
-            settingsModal.style.display = 'none';
-        });
-
-              // 타이틀로 돌아가기 (게임 종료 버튼)
+       // 타이틀로 돌아가기 (게임 종료 버튼)
         document.getElementById('btnExitToTitle').addEventListener('click', () => {
             isPaused = false;
             settingsModal.style.display = 'none';
+            mobileControls.style.display = 'none'; // 타이틀로 갈 때 컨트롤러 숨김
+            mazeControls.style.display = 'none';
             state = 'start';
-            stopBgm(); // 타이틀로 가면 BGM 끄기
+            stopBgm();
             score = 0; lives = 3; stage = 1;
-            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
             // 타이틀 화면에서는 플레이용 컨트롤러 숨김 처리
             mobileControls.style.display = 'none'; 
             mazeControls.style.display = 'none';   
@@ -601,8 +636,8 @@ else playRandomBgm();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        // 볼륨 슬라이더 조절
-        bgmVolumeSlider.addEventListener('input', (e) => {
+            // 볼륨 슬라이더 조절
+            bgmVolumeSlider.addEventListener('input', (e) => {
             bgmAudio.volume = e.target.value;
         });
 
