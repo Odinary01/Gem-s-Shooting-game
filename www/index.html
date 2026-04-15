@@ -5,697 +5,729 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Space Shooter</title>
     <style>
-        body { background-color: #222; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; }
-        #gameContainer { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; padding-bottom: 220px; box-sizing: border-box; }
-        canvas { background-color: black; border: 2px solid #555; max-width: 100%; max-height: 100%; touch-action: none; }
+        body {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
 
-   #mobileControls {
-   position: absolute;
-   bottom: 0;
-   left: 0;
-   width: 100%;
-   max-width: 600px; /* 캔버스 크기 이상으로 안 늘어나게 제한 */
-   height: 220px;
-   display: none;
-   justify-content: space-between;
-   align-items: center;
-   padding: 0 30px;
-   box-sizing: border-box;
-   pointer-events: none;
-   z-index: 50;
-   padding: 0 20px; /* 전체 컨트롤러 그룹과 화면 가장자리 간격 조정 */
-}
-.control-group {
-   display: flex;
-   gap: 10px; /* 버튼 사이 간격 축소 */
-   pointer-events: auto;
-   align-items: center;
-   gap: 15px; /* 이동 버튼 사이 간격 축소 (원하는 대로 조절) */
-}
-.control-btn {
-   background-color: transparent;
-   border: none;
-   width: 60px; /* 버튼 자체의 클릭 영역 크기 */
-   height: 60px;
-   background-color: transparent; /* 완전 투명 */
-   border: none; /* 테두리 제거 */
-   overflow: hidden; /* 이미지가 버튼 영역을 벗어나면 숨김 */
-}
-.control-btn:active {
-   background-color: transparent;
-}
-.control-btn img {
-    width: 100%; /* 버튼 크기에 맞춰 이미지 크기 조정 */
-    height: 100%;
-    object-fit: contain; /* 비율 유지하며 버튼 안에 맞춤 */
-}
-#btnFire {
-    background-color: rgba(255, 255, 255, 0.3); /* 발사 버튼만 약간 불투명하게 유지 (선택사항) */
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    font-size: 16px;
-    font-weight: bold;
-}
-/* 메이즈 컨트롤러 스타일 수정 */
-#mazeControls {
-    position: absolute;
-    top: 50%; /* 화면 중앙 배치 */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 220px;
-    height: 220px;
-    display: none;
-    grid-template-columns: 70px 70px 70px;
-    grid-template-rows: 70px 70px 70px;
-    grid-template-areas: 
-        ". up ."
-        "left . right"
-        ". down .";
-    gap: 5px;
-    z-index: 50;
-}
-.maze-btn {
-    width: 70px;
-    height: 70px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: transparent; /* 배경색 투명 */
-    border: none; /* 테두리 제거 */
-    opacity: 0.6;
-    transition: transform 0.1s, opacity 0.2s;
-}
-.maze-btn.active {
-    opacity: 1;
-    filter: drop-shadow(0 0 10px cyan); /* 활성화 시 빛나는 효과 */
-}
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            cursor: pointer;
+            padding-bottom: 220px;
+            box-sizing: border-box;
+        }
 
-/* 각 방향에 이미지 할당 */
-#mazeUp { grid-area: up; background-image: url('uploaded:image.png-70bfdde5-209e-4ab2-941c-6b2d7cedadd1'); }
-#mazeDown { grid-area: down; background-image: url('uploaded:image.png-0307a2b4-76f5-4b1c-b079-585a6c3ad556'); }
-#mazeLeft { grid-area: left; background-image: url('uploaded:image.png-34ebaa3c-633f-4dc1-b695-a4b166e67cbd'); }
-#mazeRight { grid-area: right; background-image: url('uploaded:image.png-e9535615-f267-4077-99d6-72041ba05770'); }
-#btnSettings {
-    position: absolute; top: 15px; right: 15px;
-    width: 45px; height: 45px;
-    font-size: 24px;
-    background-color: rgba(255,255,255,0.2); border: 2px solid white;
-    border-radius: 50%; color: white; display: flex;
-    justify-content: center; align-items: center; cursor: pointer;
-    z-index: 999; pointer-events: auto !important; /* 터치 무조건 활성화 */
-}
+        canvas {
+            background-color: black;
+            border: 2px solid #555;
+            max-width: 100%;
+            max-height: 100%;
+            touch-action: none;
+        }
 
-#settingsModal {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px; background-color: rgba(0, 0, 0, 0.9);
-    border: 3px solid #00ffff; border-radius: 15px; padding: 25px;
-    display: none; flex-direction: column; align-items: center; gap: 25px;
-    z-index: 1000; pointer-events: auto !important;
-}
+        #mobileControls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-width: 600px;
+            height: 220px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: 50;
+            padding: 0 20px;
+        }
+
+        .control-group {
+            display: flex;
+            pointer-events: auto;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            border: none;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        .control-btn:active {
+            background-color: transparent;
+        }
+
+        .control-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 발사 버튼 스타일 수정 (btnFire -> btnShoot 매핑 수정) */
+        #btnShoot {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50%;
+            color: white;
+        }
+
+        #btnShoot:active {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        #btnMusic {
+            width: 45px;
+            height: 45px;
+            font-size: 18px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #mazeControls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            display: none;
+            grid-template-columns: 70px 70px 70px;
+            grid-template-rows: 70px 70px 70px;
+            grid-template-areas: ". up ." "left . right" ". down .";
+            gap: 5px;
+            z-index: 50;
+        }
+
+        .maze-btn {
+            width: 70px;
+            height: 70px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            border: none;
+            opacity: 0.6;
+            transition: transform 0.1s, opacity 0.2s;
+            cursor: pointer;
+        }
+
+        .maze-btn.active {
+            opacity: 1;
+            filter: drop-shadow(0 0 10px cyan);
+        }
+
+        #mazeUp { grid-area: up; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300ffff'/%3E%3Cstop offset='100%25' stop-color='%230055aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 50 15 L 85 55 L 65 55 L 65 85 L 35 85 L 35 55 L 15 55 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+        #mazeDown { grid-area: down; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300ffff'/%3E%3Cstop offset='100%25' stop-color='%230055aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 50 85 L 15 45 L 35 45 L 35 15 L 65 15 L 65 45 L 85 45 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+        #mazeLeft { grid-area: left; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%2300ffff'/%3E%3Cstop offset='100%25' stop-color='%230055aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 15 50 L 55 15 L 55 35 L 85 35 L 85 65 L 55 65 L 55 85 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+        #mazeRight { grid-area: right; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%230055aa'/%3E%3Cstop offset='100%25' stop-color='%2300ffff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 85 50 L 45 85 L 45 65 L 15 65 L 15 35 L 45 35 L 45 15 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+
+        #btnSettings {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            font-size: 24px;
+            background-color: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 999;
+            pointer-events: auto !important;
+        }
+
+        #settingsModal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 3px solid #00ffff;
+            border-radius: 15px;
+            padding: 25px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            z-index: 1000;
+            pointer-events: auto !important;
+        }
 
         #settingsModal h2 { margin: 0; color: yellow; font-size: 28px; }
         .slider-container { display: flex; flex-direction: column; width: 100%; color: white; text-align: left; font-size: 18px; gap: 10px; }
         .modal-btn { background-color: #444; border: 2px solid white; color: white; padding: 12px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
         .modal-btn.exit { background-color: #aa0000; border-color: #ff5555; }
 
-        .maze-btn.active { opacity: 1; cursor: pointer; background-color: rgba(0, 255, 255, 0.5); color: white; box-shadow: 0 0 15px cyan; border-color: rgba(0, 255, 255, 1); }
-        .maze-btn.active:active { background-color: rgba(0, 255, 255, 0.8); }
-        #mazeUp { grid-area: up; } #mazeDown { grid-area: down; } #mazeLeft { grid-area: left; } #mazeRight { grid-area: right; }
-        
-        #restartBtn { position: absolute; bottom: 250px; left: 50%; transform: translateX(-50%); display: none; pointer-events: auto; }
+        #restartBtn {
+            position: absolute;
+            bottom: 250px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            pointer-events: auto;
+            background-color: rgba(0, 255, 255, 0.3);
+            font-weight: bold;
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-size: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
-      <div id="gameContainer">
-        <canvas id="gameCanvas" width="600" height="720"></canvas>
-        
-        <div id="btnSettings">⚙️</div>
-        <div id="settingsModal">
-            <h2>SETTINGS</h2>
-            <div class="slider-container">
-                <label for="bgmVolume">BGM Volume</label>
-                <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="1">
-            </div>
-            <button class="modal-btn" id="btnResume">Resume Game</button>
-            <button class="modal-btn exit" id="btnExitToTitle">Exit to Title</button>
+
+<div id="gameContainer">
+    <canvas id="gameCanvas" width="600" height="720"></canvas>
+    
+    <div id="btnSettings">⚙️</div>
+    
+    <div id="settingsModal">
+        <h2>SETTINGS</h2>
+        <div class="slider-container">
+            <label for="bgmVolume">BGM Volume</label>
+            <input type="range" id="bgmVolume" min="0" max="1" step="0.1" value="1">
         </div>
+        <button class="modal-btn" id="btnResume">Resume Game</button>
+        <button class="modal-btn exit" id="btnExitToTitle">Exit to Title</button>
+    </div>
 
-<div id="mobileControls">
-    <div class="control-group">
-        <div class="control-btn" id="btnUp"><img src="uploaded:image.png-70bfdde5" alt="Up"></div>
-        <div class="control-btn" id="btnLeft"><img src="uploaded:image.png-34ebaa3c" alt="Left"></div>
-        <div class="control-btn" id="btnDown"><img src="uploaded:image.png-0307a2b4" alt="Down"></div>
-        <div class="control-btn" id="btnRight"><img src="uploaded:image.png-e9535615" alt="Right"></div>
+    <div id="mobileControls">
+        <div class="control-group">
+            <div class="control-btn" id="btnLeft"><img src="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%2300ffff'/%3E%3Cstop offset='100%25' stop-color='%230055aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 15 50 L 55 15 L 55 35 L 85 35 L 85 65 L 55 65 L 55 85 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E" alt="Left"></div>
+            <div class="control-btn" id="btnRight"><img src="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%230055aa'/%3E%3Cstop offset='100%25' stop-color='%2300ffff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 85 50 L 45 85 L 45 65 L 15 65 L 15 35 L 45 35 L 45 15 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E" alt="Right"></div>
+        </div>
+        <div class="control-group">
+            <div class="control-btn" id="btnMusic">🎵</div>
+            <div class="control-btn" id="btnShoot">🔥</div>
+        </div>
     </div>
-    <div class="control-btn" id="btnFire">🔥</div>
-</div>
-<div id="mazeControls">
-    <div class="maze-btn" id="mazeUp"></div>
-    <div class="maze-btn" id="mazeLeft"></div>
-    <div class="maze-btn" id="mazeRight"></div>
-    <div class="maze-btn" id="mazeDown"></div>
-</div>
-        <div class="control-btn center-btn" id="restartBtn">TO TITLE</div>
+
+    <div id="mazeControls">
+        <div class="maze-btn" id="mazeUp"></div>
+        <div class="maze-btn" id="mazeLeft"></div>
+        <div class="maze-btn" id="mazeRight"></div>
+        <div class="maze-btn" id="mazeDown"></div>
     </div>
+
+    <div id="restartBtn">TO TITLE</div>
+</div>
+
 <script>
-        const images = { player: new Image(), minion: new Image(), midBoss: new Image(), boss: new Image(), superBoss: new Image(), asteroid: new Image() };
-        images.player.src = "data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2040%2040%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22hull%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ffffff%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23888888%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22wing%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23aaaaaa%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23555555%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22glass%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2300ffff%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230055aa%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpolygon%20points%3D%2220%2C10%2040%2C35%2025%2C35%22%20fill%3D%22url(%23wing)%22%2F%3E%3Cpolygon%20points%3D%2220%2C10%200%2C35%2015%2C35%22%20fill%3D%22url(%23wing)%22%2F%3E%3Cpolygon%20points%3D%2217%2C0%2023%2C0%2025%2C35%2015%2C35%22%20fill%3D%22url(%23hull)%22%2F%3E%3Cellipse%20cx%3D%2220%22%20cy%3D%2215%22%20rx%3D%223%22%20ry%3D%226%22%20fill%3D%22url(%23glass)%22%2F%3E%3Cpolygon%20points%3D%2216%2C35%2019%2C40%2018%2C35%22%20fill%3D%22%23ffaa00%22%2F%3E%3Cpolygon%20points%3D%2221%2C35%2024%2C40%2022%2C35%22%20fill%3D%22%23ffaa00%22%2F%3E%3C%2Fsvg%3E";
-        images.minion.src = "data:image/svg+xml," + encodeURIComponent(`<svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffaaaa"/><stop offset="100%" stop-color="#aa00aa"/></linearGradient></defs><rect x="2" y="2" width="26" height="26" rx="4" fill="url(#mg)"/><circle cx="15" cy="15" r="5" fill="#00ffff"/></svg>`);
-        images.midBoss.src = "data:image/svg+xml," + encodeURIComponent(`<svg viewBox="0 0 30 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffdd88"/><stop offset="100%" stop-color="#cc5500"/></linearGradient></defs><polygon points="0,0 30,0 15,60" fill="url(#mbg)"/><circle cx="15" cy="20" r="6" fill="#00ffff"/></svg>`);
-        images.boss.src = "data:image/svg+xml," + encodeURIComponent(`<svg viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ff8888"/><stop offset="50%" stop-color="#aa0000"/><stop offset="100%" stop-color="#550000"/></linearGradient></defs><rect x="0" y="0" width="30" height="120" rx="8" fill="url(#bg)"/><rect x="10" y="10" width="10" height="100" fill="#222"/><circle cx="15" cy="30" r="4" fill="#00ffff"/><circle cx="15" cy="60" r="4" fill="#00ffff"/><circle cx="15" cy="90" r="4" fill="#00ffff"/></svg>`);
-        images.superBoss.src = "data:image/svg+xml," + encodeURIComponent(`<svg viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sbg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="20%" stop-color="#ff0000"/><stop offset="100%" stop-color="#660000"/></radialGradient></defs><polygon points="15,0 30,60 15,120 0,60" fill="url(#sbg)"/><circle cx="15" cy="60" r="8" fill="#000000"/><circle cx="15" cy="60" r="4" fill="#ffff00"/></svg>`);
-        images.asteroid.src = "data:image/svg+xml," + encodeURIComponent(`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ag" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#bbbbbb"/><stop offset="100%" stop-color="#333333"/></radialGradient></defs><path d="M 20,20 Q 50,0 80,20 T 90,50 Q 100,80 70,90 T 20,80 Q 0,50 20,20 Z" fill="url(#ag)"/><circle cx="35" cy="35" r="12" fill="#222"/><circle cx="65" cy="65" r="8" fill="#222"/><circle cx="75" cy="35" r="5" fill="#222"/><circle cx="30" cy="70" r="10" fill="#222"/></svg>`);
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null, isVoidArea = false, stars = [];
-        for(let i = 0; i < 100; i++) stars.push({ x: Math.random() * 600, y: Math.random() * 720, s: Math.random() * 1.5 + 0.5, v: Math.random() * 2 + 0.5 });
-               // BGM 시스템 변수 (수노 AI 파일명 배열에 맞게 수정)
-               const bgmFiles = ['bgm01.mp3', 'bgm02.mp3', 'bgm03.mp3', 'bgm04.mp3', 'bgm05.mp3', 'bgm06.mp3', 'bgm07.mp3', 'bgm08.mp3', 'bgm09.mp3', 'bgm10.mp3', 'bgm11.mp3', 'bgm12.mp3'];
-        let bgmAudio = new Audio();
-        let isMusicMuted = false;
-// 한 곡이 끝나면 무작위로 다음 곡 재생
-            bgmAudio.addEventListener('ended', () => {
-            bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)];
-            bgmAudio.play().catch(e => console.log(e));
-        });
-function playRandomBgm() {
-            if (isMusicMuted || isVoidArea || state === 'start') return;
-            if (!bgmAudio.paused) return; // 이미 재생 중이면 무시
-            bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)];
-            bgmAudio.play().catch(e => console.log("터치 전 자동재생 방지"));
-        }
-function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
-        function pauseBgm() { bgmAudio.pause(); }
-        function initAudio() { if (AudioContextClass && !audioCtx) audioCtx = new AudioContextClass(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
-        function playShootSound() {
-            if (!audioCtx || isVoidArea) return;
-            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-            osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
-            const t = audioCtx.currentTime + 0.01;
-            osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
-            gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
-            osc.start(t); osc.stop(t + 0.1);
-        }
-        function playExplosionSound() {
-            if (!audioCtx || isVoidArea) return;
-            const bufferSize = audioCtx.sampleRate * 0.5, buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate), data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-            const noise = audioCtx.createBufferSource(), filter = audioCtx.createBiquadFilter(), gain = audioCtx.createGain();
-            noise.buffer = buffer; filter.type = 'lowpass'; filter.frequency.value = 800;
-            noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            noise.start();
-        }
+const images = { player: new Image(), minion: new Image(), midBoss: new Image(), boss: new Image(), superBoss: new Image(), asteroid: new Image() };
 
-        const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
-        const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
-        let state = 'start', score = 0, lives = 3, stage = 1; let isPaused = false;
-        
-        // 밸런스 및 구역 한정 변수들 (핵심)
-        const basePlayerSpeed = 1, baseShootCooldown = 400;
-        let permanentWeaponSpeedLevel = 0, permanentPlayerSpeed = basePlayerSpeed, portOverheatMultiplier = 1, currentWallThickness = 0;
-        let baseEnemySpeedMod = 1, baseEnemyHpMod = 1, stageEnemySpeedMod = 0, stageEnemyHpMod = 0, enemySpeedMod = 1, enemyHpMod = 1;
-        let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
-        
-        let bullets = [], enemyBullets = [], enemies = [], asteroids = [], virtualKeys = {}, currentExits = [true, true, true, true];
-               let explosions = [], screenShake = 0, activeEffectText = "", effectDisplayTimer = 0, silenceUntil = 0, hitBlinkTimer = 0, scoreSaved = false, leaderboards = [];
-        let lastShootTime = 0;
-        let isTrapNext = false; // 적 증원 여부 체크용 변수 추가
-        
-        try { let lbData = localStorage.getItem('mazeGalagaLeaderboard'); if (lbData) leaderboards = JSON.parse(lbData); } catch (e) {}
-        let lastPlayInfo = { stage: 1, score: 0, lives: 3 };
-        try { let savedData = localStorage.getItem('mazeGalagaLastPlay'); if (savedData && savedData !== "undefined") lastPlayInfo = JSON.parse(savedData); } catch(e) {}
+images.player.src = "data:image/svg+xml,%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='hull' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23888888'/%3E%3C/linearGradient%3E%3ClinearGradient id='wing' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23aaaaaa'/%3E%3Cstop offset='100%25' stop-color='%23555555'/%3E%3C/linearGradient%3E%3ClinearGradient id='glass' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300ffff'/%3E%3Cstop offset='100%25' stop-color='%230055aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='20,10 40,35 25,35' fill='url(%23wing)'/%3E%3Cpolygon points='20,10 0,35 15,35' fill='url(%23wing)'/%3E%3Cpolygon points='17,0 23,0 25,35 15,35' fill='url(%23hull)'/%3E%3Cellipse cx='20' cy='15' rx='3' ry='6' fill='url(%23glass)'/%3E%3Cpolygon points='16,35 19,40 18,35' fill='%23ffaa00'/%3E%3Cpolygon points='21,35 24,40 22,35' fill='%23ffaa00'/%3E%3C/svg%3E";
+images.minion.src = "data:image/svg+xml," + encodeURIComponent('<svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffaaaa"/><stop offset="100%" stop-color="#aa00aa"/></linearGradient></defs><rect x="2" y="2" width="26" height="26" rx="4" fill="url(#mg)"/><circle cx="15" cy="15" r="5" fill="#00ffff"/></svg>');
+images.midBoss.src = "data:image/svg+xml," + encodeURIComponent('<svg viewBox="0 0 30 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffdd88"/><stop offset="100%" stop-color="#cc5500"/></linearGradient></defs><polygon points="0,0 30,0 15,60" fill="url(#mbg)"/><circle cx="15" cy="20" r="6" fill="#00ffff"/></svg>');
+images.boss.src = "data:image/svg+xml," + encodeURIComponent('<svg viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ff8888"/><stop offset="50%" stop-color="#aa0000"/><stop offset="100%" stop-color="#550000"/></linearGradient></defs><rect x="0" y="0" width="30" height="120" rx="8" fill="url(#bg)"/><rect x="10" y="10" width="10" height="100" fill="#222"/><circle cx="15" cy="30" r="4" fill="#00ffff"/><circle cx="15" cy="60" r="4" fill="#00ffff"/><circle cx="15" cy="90" r="4" fill="#00ffff"/></svg>');
+images.superBoss.src = "data:image/svg+xml," + encodeURIComponent('<svg viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sbg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="20%" stop-color="#ff0000"/><stop offset="100%" stop-color="#660000"/></radialGradient></defs><polygon points="15,0 30,60 15,120 0,60" fill="url(#sbg)"/><circle cx="15" cy="60" r="8" fill="#000000"/><circle cx="15" cy="60" r="4" fill="#ffff00"/></svg>');
+images.asteroid.src = "data:image/svg+xml," + encodeURIComponent('<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ag" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#bbbbbb"/><stop offset="100%" stop-color="#333333"/></radialGradient></defs><path d="M 20,20 Q 50,0 80,20 T 90,50 Q 100,80 70,90 T 20,80 Q 0,50 20,20 z" fill="url(#ag)"/><circle cx="35" cy="35" r="12" fill="#222"/><circle cx="65" cy="65" r="8" fill="#222"/><circle cx="75" cy="35" r="5" fill="#222"/><circle cx="30" cy="70" r="10" fill="#222"/></svg>');
 
-        function bindTouch(el, vKey) {
-            el.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); virtualKeys[vKey] = true; }, {passive: false});
-            el.addEventListener('touchend', (e) => { e.preventDefault(); virtualKeys[vKey] = false; });
-            el.addEventListener('mousedown', (e) => { e.preventDefault(); initAudio(); virtualKeys[vKey] = true; });
-            el.addEventListener('mouseup', (e) => { e.preventDefault(); virtualKeys[vKey] = false; });
-            el.addEventListener('mouseleave', (e) => { virtualKeys[vKey] = false; });
-        }
-        
-        bindTouch(document.getElementById('btnLeft'), 'ArrowLeft'); bindTouch(document.getElementById('btnRight'), 'ArrowRight'); bindTouch(document.getElementById('btnShoot'), ' ')
-
-        // --- 기존 키 바인딩 코드 아래에 추가 ---
-        const btnMusic = document.getElementById('btnMusic');
-        const settingsModal = document.getElementById('settingsModal');
-        const bgmVolumeSlider = document.getElementById('bgmVolume');
-
-        // --- 앱 실행 시 저장된 설정 불러오기 ---
-        let savedVolume = localStorage.getItem('mazeGalagaVolume');
-        if (savedVolume !== null) {
-            bgmAudio.volume = parseFloat(savedVolume) * 0.2;
-            bgmVolumeSlider.value = savedVolume;
-        }
-        let savedMute = localStorage.getItem('mazeGalagaMuted');
-        if (savedMute === 'true') {
-            isMusicMuted = true;
-            btnMusic.innerText = "🔇";
-            btnMusic.style.opacity = "0.5";
-        }
-
-        // --- 음악 음소거 토글 및 상태 저장 ---
-        function toggleMusic(e) {
-            e.preventDefault();
-            isMusicMuted = !isMusicMuted;
-            btnMusic.innerText = isMusicMuted ? "🔇" : "🎵";
-            btnMusic.style.opacity = isMusicMuted ? "0.5" : "1";
-            localStorage.setItem('mazeGalagaMuted', isMusicMuted); // 음소거 상태 저장
-            
-            if (isMusicMuted) pauseBgm();
-            else if (state !== 'start' && !isVoidArea) playRandomBgm();
-        }
-        btnMusic.addEventListener('mousedown', toggleMusic);
-        btnMusic.addEventListener('touchstart', toggleMusic, {passive: false});
-
-        // --- 볼륨 슬라이더 조절 및 상태 저장 ---
-        bgmVolumeSlider.addEventListener('input', (e) => {
-            bgmAudio.volume = e.target.value * 0.2;
-            localStorage.setItem('mazeGalagaVolume', e.target.value); // 볼륨 수치 저장
-        });
-
-        ['mazeUp', 'mazeRight', 'mazeDown', 'mazeLeft'].forEach((id, idx) => {
-            let dirs = ['up', 'right', 'down', 'left'];
-            document.getElementById(id).addEventListener('click', (e) => { e.preventDefault(); initAudio(); makeChoice(idx, dirs[idx]); });
-            document.getElementById(id).addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); makeChoice(idx, dirs[idx]); }, {passive: false});
-        });
-       function getGachaPool() {
-            let pool = [
-                { name: "✨ Weapon pod +1", type: "buff", apply: () => player.weaponLevel = Math.min(5, player.weaponLevel + 1) }, 
-                { name: "✨ Power Weapon (*)", type: "buff", apply: () => { if (player.isPowerWeapon) player.weaponLevel = Math.min(5, player.weaponLevel + 1); else player.isPowerWeapon = true; } }, 
-                { name: "✨ Weapon speed up", type: "buff", apply: () => { permanentWeaponSpeedLevel = Math.min(3, permanentWeaponSpeedLevel + 1); } },
-                { name: "✨ Engine booster", type: "buff", apply: () => { permanentPlayerSpeed = 8; player.speed = permanentPlayerSpeed; } }, 
-                { name: "✨ Plasma Shield (1 shot is invalid)", type: "buff", apply: () => player.shield = true }, 
-                { name: "✨ Armor +1", type: "buff", apply: () => lives++ }, 
-                { name: "💀 Weapon pod -1", type: "debuff", apply: () => { player.weaponLevel = Math.max(1, player.weaponLevel - 1); }},
-                { name: "💀 Pods overheated", type: "debuff", apply: () => portOverheatMultiplier = 2 },
-                { name: "💀 EMP! (Pods down)", type: "debuff", apply: () => { silenceUntil = Date.now() + Math.floor(Math.random() * 20000) + 10000; }},
-                { name: "💀 Enemy speed up", type: "debuff", apply: () => stageEnemySpeedMod = 0.5 },
-                { name: "💀 Engine overheated", type: "debuff", apply: () => player.speed = 3 },
-                { name: "💀 Enemy armor buff", type: "debuff", apply: () => stageEnemyHpMod = 0.5 },
-                               { name: "💀 Increased Enemy!", type: "debuff", apply: () => { isTrapNext = true; } },
-                { name: "🕳️ Void area", type: "neutral", apply: () => isVoidArea = true }
-            ];
-            if (stage >= 50) pool.push({ name: "💀 Space compression (Wall)", type: "debuff", apply: () => { currentWallThickness = Math.floor(Math.random() * 10) + 1; } });
-            return pool;
-        }
-
-        function resetGame() {
-            state = 'playing'; score = 0; lives = 3; stage = 1; isVoidArea = false; 
-            permanentWeaponSpeedLevel = 0; portOverheatMultiplier = 1;
-            permanentPlayerSpeed = basePlayerSpeed; currentWallThickness = 0;
-            baseEnemySpeedMod = 1; baseEnemyHpMod = 1; stageEnemySpeedMod = 0; stageEnemyHpMod = 0;
-            enemySpeedMod = 1; enemyHpMod = 1;
-            player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
-            bullets = []; enemyBullets = []; currentExits = [true, true, true, true]; asteroids = []; explosions = [];
-            screenShake = 0; activeEffectText = ""; effectDisplayTimer = 0; silenceUntil = 0; hitBlinkTimer = 0; scoreSaved = false; virtualKeys = {}; lastShootTime = 0;
-            mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; restartBtn.style.display = 'none'; spawnEnemies(false); saveLastPlayInfo(); playRandomBgm();
-        }
-function spawnEnemies(isTrap) {
-            enemies = []; asteroids = []; 
-            if (stage >= 100) { let bWidth = 30, bHeight = 120, bHp = 300 * enemyHpMod;
-                enemies.push({ type: 'super-boss', x: canvas.width / 2 - bWidth / 2, y: 50, width: bWidth, height: bHeight, speedX: 2 * enemySpeedMod, hp: bHp }); return; 
-            }
-            if (stage >= 3) { let numAsteroids = Math.floor(Math.random() * 5);
-                for (let i = 0; i < numAsteroids; i++) asteroids.push({ x: Math.random() * (canvas.width - 120), y: Math.random() * 150 + 200, width: 120, height: 120, hp: 10 });
-            }
-            let rows = isTrap ? 5 : 3, cols = isTrap ? 8 : 6, startY = 60, bossCount = 0, spawnMidBoss = false, midBossCount = 0;
-            if (stage >= 10) { 
-                let rand = Math.random(); 
-                if (rand < 0.20) { bossCount = stage >= 50 ? Math.floor(Math.random() * 3) + 1 : 1; spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; } 
-                else if (rand < 0.75) { spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; } 
-            }
-            if (bossCount > 0) {
-                let bWidth = 30, bHeight = 120, bHp = 50 * enemyHpMod, spacing = 80, startX = (canvas.width - (bossCount * spacing)) / 2;
-                for (let i = 0; i < bossCount; i++) enemies.push({ type: 'boss', x: startX + i * spacing + 25, y: 30, width: bWidth, height: bHeight, speedX: 1 * enemySpeedMod, hp: bHp });
-            }
-            if (spawnMidBoss) {
-                let bWidth = 30, bHeight = 60, bHp = 20 * enemyHpMod, spacing = 60, startX = (canvas.width - (midBossCount * spacing)) / 2;
-                for(let i=0; i<midBossCount; i++) enemies.push({ type: 'mid-boss', x: startX + i * spacing + 15, y: 30, width: bWidth, height: bHeight, speedX: -1 * enemySpeedMod, hp: bHp });
-                startY = 30 + bHeight + 20;
-            }
-            for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) enemies.push({ type: 'minion', x: 60 + c * 50, y: startY + r * 40, width: 30, height: 30, speedX: 1 * enemySpeedMod, hp: 1 * enemyHpMod });
-        }
-
-        function update() {
-            stars.forEach(st => { st.y += st.v; if (st.y > canvas.height) { st.y = 0; st.x = Math.random() * canvas.width; } });
-            if (state === 'playing') {
-                if (hitBlinkTimer > 0) hitBlinkTimer--;
-                if (virtualKeys['ArrowLeft'] && player.x > currentWallThickness) player.x -= player.speed;
-                if (virtualKeys['ArrowRight'] && player.x < canvas.width - player.width - currentWallThickness) player.x += player.speed;
-                if (player.x < currentWallThickness) player.x = currentWallThickness;
-                if (player.x > canvas.width - player.width - currentWallThickness) player.x = canvas.width - player.width - currentWallThickness;
-                
-                let fireRate = 0.0002 + Math.floor(stage / 5) + 0.2;
-                for (let j = enemies.length - 1; j >= 0; j--) {
-                    let e = enemies[j];
-                    e.x += e.speedX;
-                    if (e.x <= 0 || e.x + e.width >= canvas.width) {
-                        e.speedX *= -1; e.y += 20; e.x = e.x <= 0 ? 0 : canvas.width - e.width;
-                    }
-                    if (stage > 3 && Math.random() < fireRate + enemySpeedMod) {
-                        enemyBullets.push({ x: e.x + e.width / 2 - 2, y: e.y + e.height, width: 4, height: 10, speedY: 2 * enemySpeedMod });
-                    }
-                    
-                    let enemyDestroyed = false;
-                    for (let a = asteroids.length - 1; a >= 0; a--) {
-                        if (isColliding(e, asteroids[a])) {
-                        if (e.type === 'minion') {
-    enemies.splice(j, 1); enemyDestroyed = true; break; 
-} else {
-    let pts = []; 
-    for(let p=0; p<20; p++) pts.push({x: asteroids[a].x + asteroids[a].width/2, y: asteroids[a].y + asteroids[a].height/2, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 40});
-    explosions.push({ type: 'particles', particles: pts });
-    asteroids.splice(a, 1); 
-     }
-                        }
-                    }
-                    if (enemyDestroyed) continue;
-                }
-
-                const wsMult = [1, 1.5, 2, 3]; // 3단계 웨폰 속도 공식
-                let actualCooldown = (baseShootCooldown / wsMult[permanentWeaponSpeedLevel]) * portOverheatMultiplier;
-                if (virtualKeys[' '] && Date.now() - lastShootTime > actualCooldown && Date.now() >= silenceUntil) {
-                    playShootSound();
-                    let bSpeed = -3, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
-                    let cX = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
-                    if (player.weaponLevel === 1) bList.push({ x: cX, y: yTop });
-                    else if (player.weaponLevel === 2) { bList.push({ x: lX + 8, y: yBot }); bList.push({ x: rX - 8, y: yBot }); }
-                    else if (player.weaponLevel === 3) { bList.push({ x: lX + 4, y: yBot }); bList.push({ x: cX, y: yTop }); bList.push({ x: rX - 4, y: yBot }); }
-                    else if (player.weaponLevel === 4) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop+5 }); bList.push({ x: rmX, y: yTop+5 }); bList.push({ x: rX, y: yBot }); }
-                    else if (player.weaponLevel >= 5) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop+5 }); bList.push({ x: cX, y: yTop }); bList.push({ x: rmX, y: yTop+5 }); bList.push({ x: rX, y: yBot }); }
-                    bList.forEach(pos => bullets.push({ x: pos.x, y: pos.y, width: bw, height: bh, speedX: 0, speedY: bSpeed, power: pwrDmg, isPower: isPwr }));
-                    lastShootTime = Date.now();
-                }
-                
-                               for (let i = bullets.length - 1; i >= 0; i--) {
-                    bullets[i].y += bullets[i].speedY; // 총알 전진
-                    if (bullets[i].y < 0) { bullets.splice(i, 1); continue; } // 화면 밖으로 나간 총알 삭제
-
-                    let hitAsteroid = false;
-                    for (let a = asteroids.length - 1; a >= 0; a--) {
-                        if (isColliding(bullets[i], asteroids[a])) {
-                            asteroids[a].hp -= bullets[i].power; bullets.splice(i, 1); hitAsteroid = true;
-                            if (asteroids[a].hp <= 0) {
-                            let pts = []; 
-for(let p=0; p<20; p++) pts.push({x: asteroids[a].x + asteroids[a].width/2, y: asteroids[a].y + asteroids[a].height/2, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 40});
-explosions.push({ type: 'particles', particles: pts });
-                                asteroids.splice(a, 1);
-                            } break;
-                        }
-                    }
-                    if (hitAsteroid) continue;
-
-                    for (let j = enemies.length - 1; j >= 0; j--) {
-                        let e = enemies[j]; if (!(e.type === 'boss' && enemies.filter(en => en.type === 'minion').length > 0) && isColliding(bullets[i], e)) {
-                            e.hp -= bullets[i].power; bullets.splice(i, 1);
-                                                       if (e.hp <= 0) {
-                                if (e.type === 'super-boss') { 
-                                    score += 1000; screenShake = 60; 
-                                    explosions.push({ x: e.x + e.width / 2, y: e.y + e.height / 2, type: 'blackhole', radius: 1, maxRadius: 300, state: 'implode', timer: 0 }); 
-                                } else if (e.type === 'boss') { 
-                                    score += 100; 
-                                    explosions.push({ x: e.x + e.width / 2, y: e.y + e.height / 2, type: 'plasma', radius: 1, maxRadius: 150, alpha: 1 }); 
-                                } else if (e.type === 'mid-boss') { 
-                                    score += 20; 
-                                    // 미드보스 전용 버스트 효과
-                                    explosions.push({ x: e.x + e.width / 2, y: e.y + e.height / 2, type: 'burst', radius: 1, maxRadius: 60, alpha: 1 }); 
-                                } else { 
-                                    score += 1; 
-                                    // 졸병은 아무 폭발 없이 삭제만 됨
-                                }
-                                enemies.splice(j, 1);
-                            } break;
-                        }
-                    }
-                }
-                
-                               for (let i = enemyBullets.length - 1; i >= 0; i--) { 
-                    enemyBullets[i].y += enemyBullets[i].speedY; 
-                    if (enemyBullets[i].y > canvas.height) { enemyBullets.splice(i, 1); continue; }
-                    
-                    // 적 총알과 운석의 충돌 판정 추가
-                    let hitAsteroid = false;
-                    for (let a = asteroids.length - 1; a >= 0; a--) {
-                        if (isColliding(enemyBullets[i], asteroids[a])) {
-                            asteroids[a].hp -= 1; // 적 총알도 운석 내구도를 1 깎음
-                            enemyBullets.splice(i, 1); // 적 총알 소멸
-                            hitAsteroid = true;
-                            if (asteroids[a].hp <= 0) {
-    let pts = []; 
-    for(let p=0; p<20; p++) pts.push({x: asteroids[a].x + asteroids[a].width/2, y: asteroids[a].y + asteroids[a].height/2, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 40});
-    explosions.push({ type: 'particles', particles: pts });
-    asteroids.splice(a, 1); // 내구도가 0이 되면 운석 파괴
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null, isVoidArea = false, stars = [];
+for (let i = 0; i < 100; i++) {
+    stars.push({ x: Math.random() * 600, y: Math.random() * 720, s: Math.random() * 1.5 + 0.5, v: Math.random() * 2 + 0.5 });
 }
-                            break;
-                        }
+
+const bgmFiles = ['bgm01.mp3', 'bgm02.mp3', 'bgm03.mp3', 'bgm04.mp3', 'bgm05.mp3', 'bgm06.mp3', 'bgm07.mp3', 'bgm08.mp3', 'bgm09.mp3', 'bgm10.mp3', 'bgm11.mp3', 'bgm12.mp3'];
+let bgmAudio = new Audio();
+let isMusicMuted = false;
+
+bgmAudio.addEventListener('ended', () => {
+    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)];
+    bgmAudio.play().catch(e => console.log(e));
+});
+
+function playRandomBgm() {
+    if (isMusicMuted || isVoidArea || state === 'start') return;
+    if (!bgmAudio.paused) return;
+    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)];
+    bgmAudio.play().catch(e => console.log(e));
+}
+
+function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
+function pauseBgm() { bgmAudio.pause(); }
+
+function initAudio() { 
+    if (AudioContextClass && !audioCtx) audioCtx = new AudioContextClass(); 
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
+}
+
+function playShootSound() { 
+    if (!audioCtx || isVoidArea) return;
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type = 'square'; osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const t = audioCtx.currentTime + 0.01;
+    osc.frequency.setValueAtTime(800, t);
+    osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+    gain.gain.setValueAtTime(0.05, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+    osc.start(t); osc.stop(t + 0.1);
+}
+
+function playExplosionSound() {
+    if (!audioCtx || isVoidArea) return;
+    const bufferSize = audioCtx.sampleRate * 0.5, buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate), data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = audioCtx.createBufferSource(), filter = audioCtx.createBiquadFilter(), gain = audioCtx.createGain();
+    noise.buffer = buffer; filter.type = 'lowpass'; filter.frequency.value = 800;
+    noise.connect(filter); filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+    noise.start();
+}
+
+const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
+const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
+
+let state = 'start', score = 0, lives = 3, stage = 1; let isPaused = false;
+const basePlayerSpeed = 2, baseShootCooldown = 400;
+let permanentWeaponSpeedLevel = 0, permanentPlayerSpeed = basePlayerSpeed, portOverheatMultiplier = 1, currentWallThickness = 0;
+let baseEnemySpeedMod = 1, baseEnemyHpMod = 1, stageEnemySpeedMod = 0, stageEnemyHpMod = 0, enemySpeedMod = 1, enemyHpMod = 1;
+let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
+let bullets = [], enemyBullets = [], enemies = [], asteroids = [], virtualKeys = {}, currentExits = [true, true, true, true];
+let explosions = [], screenShake = 0, activeEffectText = "", effectDisplayTimer = 0, silenceUntil = 0, hitBlinkTimer = 0, scoreSaved = false, leaderboards = [];
+let lastShootTime = 0, isTrapNext = false;
+
+// localStorage 접근 오류 방지 장치 (블랙 스크린 버그 해결 핵심)
+let lastPlayInfo = { stage: 1, score: 0, lives: 3 };
+
+try { 
+    let lbData = localStorage.getItem('mazeGalagaLeaderboard');
+    if (lbData) leaderboards = JSON.parse(lbData); 
+} catch (e) {
+    console.warn("리더보드 로드 실패(권한 문제 등)");
+}
+
+try { 
+    let savedData = localStorage.getItem('mazeGalagaLastPlay'); 
+    if (savedData && savedData !== "undefined") lastPlayInfo = JSON.parse(savedData);
+} catch(e) {
+    console.warn("마지막 플레이 기록 로드 실패");
+}
+
+function bindTouch(el, vKey) {
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); virtualKeys[vKey] = true; }, {passive: false});
+    el.addEventListener('touchend', (e) => { e.preventDefault(); virtualKeys[vKey] = false; });
+    el.addEventListener('mousedown', (e) => { e.preventDefault(); initAudio(); virtualKeys[vKey] = true; });
+    el.addEventListener('mouseup', (e) => { e.preventDefault(); virtualKeys[vKey] = false; });
+    el.addEventListener('mouseleave', (e) => { virtualKeys[vKey] = false; });
+}
+
+bindTouch(document.getElementById('btnLeft'), 'ArrowLeft');
+bindTouch(document.getElementById('btnRight'), 'ArrowRight');
+bindTouch(document.getElementById('btnShoot'), ' ');
+
+const btnMusic = document.getElementById('btnMusic');
+const settingsModal = document.getElementById('settingsModal');
+const bgmVolumeSlider = document.getElementById('bgmVolume');
+
+// 오디오 설정 불러오기 에러 방지 (try-catch 적용)
+try {
+    let savedVolume = localStorage.getItem('mazeGalagaVolume');
+    if (savedVolume !== null) {
+        bgmAudio.volume = parseFloat(savedVolume) * 0.2;
+        bgmVolumeSlider.value = savedVolume;
+    }
+
+    let savedMute = localStorage.getItem('mazeGalagaMuted');
+    if (savedMute === 'true') {
+        isMusicMuted = true;
+        btnMusic.style.opacity = "0.5";
+    }
+} catch (e) {
+    console.warn("오디오 설정 로드 실패 - 기본값 적용");
+}
+
+function toggleMusic(e) {
+    e.preventDefault();
+    isMusicMuted = !isMusicMuted;
+    btnMusic.style.opacity = isMusicMuted ? "0.5" : "1";
+    try { localStorage.setItem('mazeGalagaMuted', isMusicMuted); } catch(err) {}
+    if (isMusicMuted) pauseBgm();
+    else if (state !== 'start' && !isVoidArea) playRandomBgm();
+}
+
+btnMusic.addEventListener('mousedown', toggleMusic);
+btnMusic.addEventListener('touchstart', toggleMusic, {passive: false});
+
+bgmVolumeSlider.addEventListener('input', (e) => {
+    bgmAudio.volume = e.target.value * 0.2;
+    try { localStorage.setItem('mazeGalagaVolume', e.target.value); } catch(err) {}
+});
+
+['mazeUp', 'mazeRight', 'mazeDown', 'mazeLeft'].forEach((id, idx) => {
+    let dirs = ['up', 'right', 'down', 'left'];
+    document.getElementById(id).addEventListener('click', (e) => { e.preventDefault(); initAudio(); makeChoice(idx, dirs[idx]); });
+    document.getElementById(id).addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); makeChoice(idx, dirs[idx]); }, {passive: false});
+});
+
+function getGachaPool() {
+    let pool = [
+        { name: " Weapon pod +1", type: "buff", apply: () => { player.weaponLevel = Math.min(5, player.weaponLevel + 1); } },
+        { name: " Power Weapon (*)", type: "buff", apply: () => { if (player.isPowerWeapon) player.weaponLevel = Math.min(5, player.weaponLevel + 1); else player.isPowerWeapon = true; } },
+        { name: " Weapon speed up", type: "buff", apply: () => { permanentWeaponSpeedLevel = Math.min(3, permanentWeaponSpeedLevel + 1); } },
+        { name: " Engine booster", type: "buff", apply: () => { permanentPlayerSpeed = 8; player.speed = permanentPlayerSpeed; } },
+        { name: " Plasma Shield (1 shot is invalid)", type: "buff", apply: () => { player.shield = true; } },
+        { name: " Armor +1", type: "buff", apply: () => { lives++; } },
+        { name: " Weapon pod -1", type: "debuff", apply: () => { player.weaponLevel = Math.max(1, player.weaponLevel - 1); } },
+        { name: " Pods overheated", type: "debuff", apply: () => { portOverheatMultiplier = 2; } },
+        { name: " EMP! (Pods down)", type: "debuff", apply: () => { silenceUntil = Date.now() + Math.floor(Math.random() * 20000) + 10000; } },
+        { name: " Enemy speed up", type: "debuff", apply: () => { stageEnemySpeedMod = 0.5; } },
+        { name: " Engine overheated", type: "debuff", apply: () => { player.speed = 1; } },
+        { name: " Enemy armor buff", type: "debuff", apply: () => { stageEnemyHpMod = 0.5; } },
+        { name: " Increased Enemy!", type: "debuff", apply: () => { isTrapNext = true; } },
+        { name: " Void area", type: "neutral", apply: () => { isVoidArea = true; } }
+    ];
+    if (stage >= 50) pool.push({ name: " Space compression (Wall)", type: "debuff", apply: () => { currentWallThickness = Math.floor(Math.random() * 10) + 1; } });
+    return pool;
+}
+
+function resetGame() {
+    state = 'playing'; score = 0; lives = 3; stage = 1; isVoidArea = false;
+    permanentWeaponSpeedLevel = 0; portOverheatMultiplier = 1;
+    permanentPlayerSpeed = basePlayerSpeed; currentWallThickness = 0;
+    baseEnemySpeedMod = 1; baseEnemyHpMod = 1; stageEnemySpeedMod = 0; stageEnemyHpMod = 0;
+    enemySpeedMod = 1; enemyHpMod = 1;
+    player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: false };
+    bullets = []; enemyBullets = []; currentExits = [true, true, true, true]; asteroids = []; explosions = [];
+    screenShake = 0; activeEffectText = ""; effectDisplayTimer = 0; silenceUntil = 0; hitBlinkTimer = 0; scoreSaved = false; virtualKeys = {}; lastShootTime = 0;
+    mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; restartBtn.style.display = 'none'; spawnEnemies(false); saveLastPlayInfo(); playRandomBgm();
+}
+
+function spawnEnemies(isTrap) {
+    enemies = []; asteroids = [];
+    if (stage >= 100) { 
+        let bWidth = 30, bHeight = 120, bHp = 300 * enemyHpMod;
+        enemies.push({ type: 'super-boss', x: canvas.width / 2 - bWidth / 2, y: 50, width: bWidth, height: bHeight, speedX: 2 * enemySpeedMod, hp: bHp });
+        return;
+    }
+    if (stage >= 3) { 
+        let numAsteroids = Math.floor(Math.random() * 5);
+        for (let i = 0; i < numAsteroids; i++) asteroids.push({ x: Math.random() * (canvas.width - 120), y: Math.random() * 150 + 200, width: 120, height: 120, hp: 10 });
+    }
+    let rows = isTrap ? 5 : 3, cols = isTrap ? 8 : 6, startY = 60, bossCount = 0, spawnMidBoss = false, midBossCount = 0;
+    if (stage >= 10) {
+        let rand = Math.random();
+        if (rand < 0.20) { bossCount = stage >= 50 ? Math.floor(Math.random() * 3) + 1 : 1; spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; }
+        else if (rand < 0.75) { spawnMidBoss = true; midBossCount = Math.floor(Math.random() * 5) + 1; }
+    }
+    let startX = 0;
+    if (bossCount > 0) {
+        let bWidth = 30, bHeight = 120, bHp = 50 * enemyHpMod, spacing = 80;
+        startX = (canvas.width - (bossCount * spacing)) / 2;
+        for (let i = 0; i < bossCount; i++) enemies.push({ type: 'boss', x: startX + i * spacing + 25, y: 30, width: bWidth, height: bHeight, speedX: 1 * enemySpeedMod, hp: bHp });
+    }
+    if (spawnMidBoss) {
+        let bWidth = 30, bHeight = 60, bHp = 20 * enemyHpMod, spacing = 60;
+        startX = (canvas.width - (midBossCount * spacing)) / 2;
+        for (let i = 0; i < midBossCount; i++) enemies.push({ type: 'mid-boss', x: startX + i * spacing + 15, y: 30, width: bWidth, height: bHeight, speedX: -1 * enemySpeedMod, hp: bHp });
+        startY = 30 + bHeight + 20;
+    }
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) enemies.push({ type: 'minion', x: 60 + c * 50, y: startY + r * 40, width: 30, height: 30, speedX: 1 * enemySpeedMod, hp: 1 * enemyHpMod });
+}
+
+function update() {
+    stars.forEach(st => { st.y += st.v; if (st.y > canvas.height) { st.y = 0; st.x = Math.random() * canvas.width; } });
+    if (state === 'playing') {
+        if (hitBlinkTimer > 0) hitBlinkTimer--;
+        if (virtualKeys['ArrowLeft'] && player.x > currentWallThickness) player.x -= player.speed;
+        if (virtualKeys['ArrowRight'] && player.x < canvas.width - player.width - currentWallThickness) player.x += player.speed;
+        if (player.x < currentWallThickness) player.x = currentWallThickness;
+        if (player.x > canvas.width - player.width - currentWallThickness) player.x = canvas.width - player.width - currentWallThickness;
+
+        let fireRate = 0.0002 + Math.floor(stage / 5) * 0.0002;
+        for (let j = enemies.length - 1; j >= 0; j--) {
+            let e = enemies[j];
+            e.x += e.speedX;
+            if (e.x <= 0 || e.x + e.width >= canvas.width) { e.speedX *= -1; e.y += 20; e.x = e.x <= 0 ? 0 : canvas.width - e.width; }
+            if (stage > 3 && Math.random() < fireRate * enemySpeedMod) {
+                enemyBullets.push({ x: e.x + e.width / 2 - 2, y: e.y + e.height, width: 4, height: 10, speedY: 4 * enemySpeedMod });
+            }
+            let enemyDestroyed = false;
+            for (let a = asteroids.length - 1; a >= 0; a--) {
+                if (isColliding(e, asteroids[a])) {
+                    if (e.type === 'minion') { enemies.splice(j, 1); enemyDestroyed = true; break; }
+                    else {
+                        let pts = [];
+                        for(let p = 0; p < 20; p++) pts.push({ x: asteroids[a].x + asteroids[a].width/2, y: asteroids[a].y + asteroids[a].height/2, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 40 });
+                        explosions.push({ type: 'particles', particles: pts });
+                        asteroids.splice(a, 1);
                     }
-                    if (hitAsteroid) continue;
                 }
-                               for (let i = explosions.length - 1; i >= 0; i--) {
-                    let ex = explosions[i];
-                    if (ex.type === 'plasma') { ex.radius += 5; ex.alpha -= 0.03; if (ex.alpha <= 0) explosions.splice(i, 1); }
-                    else if (ex.type === 'burst') { ex.radius += 6; ex.alpha -= 0.05; if (ex.alpha <= 0) explosions.splice(i, 1); } // 미드보스용 화염 팽창
-                    else if (ex.type === 'blackhole') { ex.timer++; if (ex.state === 'implode') { if (ex.timer < 30) ex.radius += 1.5; else { ex.state = 'explode'; ex.timer = 0; ex.radius = 10; } } else { ex.radius += 20; if (ex.radius > ex.maxRadius) explosions.splice(i, 1); } }
-                    else if (ex.type === 'particles') {
-        ex.particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life--; });
-        ex.particles = ex.particles.filter(p => p.life > 0);
-        if (ex.particles.length === 0) explosions.splice(i, 1);
+            }
+            if (enemyDestroyed) continue;
+        }
+
+        const wsMult = [1, 1.5, 2, 3];
+        let actualCooldown = (baseShootCooldown / wsMult[permanentWeaponSpeedLevel]) * portOverheatMultiplier;
+        if (virtualKeys[' '] && Date.now() - lastShootTime > actualCooldown && Date.now() > silenceUntil) {
+            playShootSound();
+            let bSpeed = -7, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
+            let cx = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
+            if (player.weaponLevel === 1) bList.push({ x: cx, y: yTop });
+            else if (player.weaponLevel === 2) { bList.push({ x: lX + 8, y: yBot }); bList.push({ x: rX - 8, y: yBot }); }
+            else if (player.weaponLevel === 3) { bList.push({ x: lX + 4, y: yBot }); bList.push({ x: cx, y: yTop }); bList.push({ x: rX - 4, y: yBot }); }
+            else if (player.weaponLevel === 4) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop + 5 }); bList.push({ x: rmX, y: yTop + 5 }); bList.push({ x: rX, y: yBot }); }
+            else if (player.weaponLevel >= 5) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop + 5 }); bList.push({ x: cx, y: yTop }); bList.push({ x: rmX, y: yTop + 5 }); bList.push({ x: rX, y: yBot }); }
+            
+            bList.forEach(pos => bullets.push({ x: pos.x, y: pos.y, width: bw, height: bh, speedX: 0, speedY: bSpeed, power: pwrDmg, isPower: isPwr }));
+            lastShootTime = Date.now();
+        }
+
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            bullets[i].y += bullets[i].speedY;
+            if (bullets[i].y < 0) { bullets.splice(i, 1); continue; }
+            let hitAsteroid = false;
+            for (let a = asteroids.length - 1; a >= 0; a--) {
+                if (isColliding(bullets[i], asteroids[a])) {
+                    asteroids[a].hp -= bullets[i].power; bullets.splice(i, 1); hitAsteroid = true;
+                    if (asteroids[a].hp <= 0) {
+                        let pts = [];
+                        for (let p = 0; p < 20; p++) pts.push({ x: asteroids[a].x + asteroids[a].width/2, y: asteroids[a].y + asteroids[a].height/2, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 40 });
+                        explosions.push({ type: 'particles', particles: pts });
+                        asteroids.splice(a, 1);
+                    }
+                    break;
+                }
+            }
+            if (hitAsteroid) continue;
+
+            for (let j = enemies.length - 1; j >= 0; j--) {
+                let e = enemies[j];
+                if (!(e.type === 'boss' && enemies.filter(en => en.type === 'minion').length > 0) && isColliding(bullets[i], e)) {
+                    e.hp -= bullets[i].power; bullets.splice(i, 1);
+                    if (e.hp <= 0) {
+                        if (e.type === 'super-boss') {
+                            score += 1000; screenShake = 60;
+                            explosions.push({ x: e.x + e.width / 2, y: e.y + e.height / 2, type: 'blackhole', radius: 1, maxRadius: 300, state: 'implode', timer: 0 });
+                        } else if (e.type === 'boss') {
+                            score += 100;
+                            explosions.push({ x: e.x + e.width / 2, y: e.y + e.height / 2, type: 'plasma', radius: 1, maxRadius: 150, alpha: 1 });
+                        } else if (e.type === 'mid-boss') {
+                            score += 20;
+                            explosions.push({ x: e.x + e.width / 2, y: e.y + e.height / 2, type: 'burst', radius: 1, maxRadius: 60, alpha: 1 });
+                        } else {
+                            score += 1;
+                        }
+                        enemies.splice(j, 1);
+                    }
+                    break;
+                }
+            }
+        }
+
+        for (let i = enemyBullets.length - 1; i >= 0; i--) {
+            enemyBullets[i].y += enemyBullets[i].speedY;
+            if (enemyBullets[i].y > canvas.height) { enemyBullets.splice(i, 1); continue; }
+            let hitAsteroid = false;
+            for (let a = asteroids.length - 1; a >= 0; a--) {
+                if (isColliding(enemyBullets[i], asteroids[a])) {
+                    asteroids[a].hp -= 1;
+                    enemyBullets.splice(i, 1);
+                    hitAsteroid = true;
+                    if (asteroids[a].hp <= 0) {
+                        let pts = [];
+                        for (let p = 0; p < 20; p++) pts.push({ x: asteroids[a].x + asteroids[a].width/2, y: asteroids[a].y + asteroids[a].height/2, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 40 });
+                        explosions.push({ type: 'particles', particles: pts });
+                        asteroids.splice(a, 1);
+                    }
+                    break;
+                }
+            }
+            if (hitAsteroid) continue;
+        }
+
+        for (let i = explosions.length - 1; i >= 0; i--) {
+            let ex = explosions[i];
+            if (ex.type === 'plasma') {
+                ex.radius += 5; ex.alpha -= 0.03;
+                if (ex.alpha <= 0) explosions.splice(i, 1);
+            } else if (ex.type === 'burst') {
+                ex.radius += 6; ex.alpha -= 0.05;
+                if (ex.alpha <= 0) explosions.splice(i, 1);
+            } else if (ex.type === 'blackhole') {
+                ex.timer++;
+                if (ex.state === 'implode') {
+                    if (ex.timer < 30) ex.radius += 1.5; else { ex.state = 'explode'; ex.timer = 0; ex.radius = 10; }
+                } else {
+                    ex.radius += 20; if (ex.radius > ex.maxRadius) explosions.splice(i, 1);
+                }
+            } else if (ex.type === 'particles') {
+                ex.particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life--; });
+                ex.particles = ex.particles.filter(p => p.life > 0);
+                if (ex.particles.length === 0) explosions.splice(i, 1);
+            }
+        }
+
+        if (screenShake > 0) screenShake--;
+
+        if (hitBlinkTimer === 0) {
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                if (isColliding(enemyBullets[i], player)) {
+                    enemyBullets.splice(i, 1);
+                    if (player.shield) { player.shield = false; hitBlinkTimer = 30; }
+                    else { handlePlayerDeath(); break; }
+                }
+            }
+        }
+
+        if (enemies.length === 0 && explosions.length === 0) {
+            if (stage >= 100) { state = 'missioncomplete'; mobileControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); }
+            else { state = 'choosing'; bullets = []; enemyBullets = []; currentExits = generateNextRoom(); updateMazeControls(); mobileControls.style.display = 'none'; mazeControls.style.display = 'grid'; }
+        }
     }
 }
-                if (screenShake > 0) screenShake--;
-                
-                               if (hitBlinkTimer === 0) {
-                    for (let i = enemyBullets.length - 1; i >= 0; i--) {
-                        if (isColliding(enemyBullets[i], player)) { 
-                            enemyBullets.splice(i, 1); 
-                            if (player.shield) {
-                                player.shield = false;
-                                hitBlinkTimer = 30;
-                            } else {
-                                handlePlayerDeath(); 
-                            }
-                            break; 
-                        }
-                    }
-                }
-                    if (enemies.length === 0 && explosions.length === 0) {
-                    if (stage >= 100) { state = 'missioncomplete'; mobileControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); }
-                    else { state = 'choosing'; bullets = []; enemyBullets = []; currentExits = generateNextRoom(); updateMazeControls(); mobileControls.style.display = 'none'; mazeControls.style.display = 'grid'; }
-                }
-            }
-        }
 
-       function drawUI() {
+function drawUI() {
     ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.textAlign = 'left';
     let uiText = `Stage: ${stage} | Score: ${score} | Armor: ${lives}`;
-    if (Date.now() < silenceUntil) uiText += ` | ⚠️EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}초`;
+    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}초`;
     ctx.fillText(uiText, 10, 30);
 }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            if (screenShake > 0) { ctx.translate((Math.random()-0.5)*15, (Math.random()-0.5)*15); }
-            
-            if (!isVoidArea) { ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; stars.forEach(st => ctx.fillRect(st.x, st.y, st.s, st.s)); }
-            
-            if (state === 'start') {
-                ctx.drawImage(images.player, 280, 650, 40, 40);
-                ctx.drawImage(images.midBoss, 250, 150, 100, 200); ctx.drawImage(images.minion, 140, 210, 80, 80); ctx.drawImage(images.asteroid, 380, 200, 100, 100);
-                if (Math.floor(Date.now() / 500) % 2 === 0) { ctx.fillStyle = 'yellow'; ctx.font = '24px Arial'; ctx.textAlign = 'center'; ctx.fillText("- TOUCH TO START -", 300, 450); }
-            } else if (state === 'playing') {
-                drawUI();
-                               asteroids.forEach(a => {
-                    ctx.drawImage(images.asteroid, a.x, a.y, a.width, a.height);
-                    // 운석 중앙에 내구도(HP) 숫자 표시
-                    ctx.fillStyle = 'white'; 
-                    ctx.font = 'bold 24px Arial'; 
-                    ctx.textAlign = 'center';
-                    ctx.fillText(a.hp, a.x + a.width / 2, a.y + a.height / 2 + 8);
-                });
-                if (Date.now() < silenceUntil) ctx.globalAlpha = 0.5;
-                if (hitBlinkTimer === 0 || Math.floor(hitBlinkTimer / 5) % 2 === 0) ctx.drawImage(images.player, player.x, player.y, player.width, player.height);
-                ctx.globalAlpha = 1.0;
-                if (player.shield) { ctx.strokeStyle = '#00ff00'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(player.x+20, player.y+20, 30, 0, Math.PI*2); ctx.stroke(); }
-                bullets.forEach(b => { if (b.isPower) { ctx.fillStyle = 'cyan'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center'; ctx.fillText('*', b.x+b.width/2, b.y+b.height/2+5); } else { ctx.fillStyle = 'yellow'; ctx.fillRect(b.x, b.y, b.width, b.height); } });
-                ctx.fillStyle = '#ff5500'; enemyBullets.forEach(eb => ctx.fillRect(eb.x, eb.y, eb.width, eb.height));
-                enemies.forEach(e => { 
-                    let img = e.type === 'mid-boss' ? images.midBoss : (e.type === 'boss' ? images.boss : (e.type === 'super-boss' ? images.superBoss : images.minion));
-                    ctx.drawImage(img, e.x, e.y, e.width, e.height);
-                });
-                                              explosions.forEach(ex => {
-                    ctx.beginPath();
-                    if (ex.type === 'plasma') {
-                        ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI*2); 
-                        ctx.strokeStyle = `rgba(0, 255, 255, ${ex.alpha})`; 
-                        ctx.lineWidth = 6; ctx.stroke();
-                    } else if (ex.type === 'burst') {
-                        // 미드보스 전용 주황색 화염 효과
-                        ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI*2); 
-                        ctx.fillStyle = `rgba(255, 100, 0, ${ex.alpha})`; 
-                        ctx.fill();
-                    } else if (ex.type === 'blackhole') {
-                        ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI*2); 
-                        if (ex.state === 'implode') { 
-                            ctx.fillStyle = 'black'; ctx.shadowBlur = 30; ctx.shadowColor = 'purple'; ctx.fill(); ctx.shadowBlur = 0; 
-                        } else { 
-                            ctx.fillStyle = `rgba(255, 255, 255, ${1 - ex.radius / ex.maxRadius})`; 
-                            ctx.fill(); 
-                        }
-                    } else if (ex.type === 'particles') {
-                        ex.particles.forEach(p => {
-                            ctx.fillStyle = `rgba(170, 170, 170, ${p.life / 40})`;
-                            ctx.fillRect(p.x, p.y, 4, 4);
-                        });
-                    }
-                });
-                
-                if (effectDisplayTimer > 0) { 
-                    ctx.fillStyle = 'yellow'; ctx.font = 'bold 30px Arial'; ctx.textAlign = 'center'; 
-                    ctx.fillText(activeEffectText, canvas.width / 2, canvas.height / 2); 
-                    effectDisplayTimer--; 
-                }
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    if (screenShake > 0) ctx.translate((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15);
+    if (!isVoidArea) { ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; stars.forEach(st => ctx.fillRect(st.x, st.y, st.s, st.s)); }
 
-            } else if (state === 'choosing') {
-                ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; 
-                ctx.fillText("Area Clear!", 300, 100); 
-                ctx.font = '22px Arial'; 
-                ctx.fillText("Choose the Next Area.", 300, 150);
-
-            } else if (state === 'gameover' || state === 'missioncomplete') {
-                ctx.fillStyle = state === 'missioncomplete' ? 'yellow' : 'red'; ctx.textAlign = 'center';
-                ctx.font = '40px Arial'; ctx.fillText(state === 'missioncomplete' ? "I SALUTE YOU!" : "GAME OVER", 300, 100);
-                ctx.fillStyle = 'white'; ctx.font = '20px Arial'; 
-                ctx.fillText(`My score - Stage: ${stage} | Score: ${score}`, 300, 150);
-                ctx.fillStyle = '#00ffff'; ctx.font = '22px Arial'; ctx.fillText("🏆 LEADERBOARD 🏆", 300, 200);
-                if (leaderboards.length === 0) ctx.fillText("No Record", 300, 250);
-                else leaderboards.forEach((e, i) => { ctx.fillText(`${i + 1}. ${e.name} - ${e.score} (St ${e.stage})`, 300, 250 + (i * 30)); });
-            }
-            ctx.restore();
-        }
-
-        function generateNextRoom() { return [Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2].map(x => x || true); }
-
-        function updateMazeControls() {
-            document.getElementById('mazeUp').style.visibility = currentExits[0] ? 'visible' : 'hidden';
-            document.getElementById('mazeRight').style.visibility = currentExits[1] ? 'visible' : 'hidden';
-            document.getElementById('mazeDown').style.visibility = currentExits[2] ? 'visible' : 'hidden';
-            document.getElementById('mazeLeft').style.visibility = currentExits[3] ? 'visible' : 'hidden';
-        }
-
-        function makeChoice(idx, dir) { 
-            if (!currentExits[idx]) return; 
-            stage++; 
-            // 1. 해당 구역(스테이지) 전용 디버프 완벽 초기화
-            isVoidArea = false; 
-            currentWallThickness = 0;
-	isTrapNext = false;
-            portOverheatMultiplier = 1;
-            player.speed = permanentPlayerSpeed; // 엔진 과열 복구
-            stageEnemyHpMod = 0;
-            stageEnemySpeedMod = 0;
-            silenceUntil = 0; // EMP 복구
-            // 2. 기본 난이도 점진적 상승 누적
-            baseEnemySpeedMod += 0.01;
-            // 3. 가챠 시스템 발동
-            let pool = getGachaPool();
-            let gacha = pool[Math.floor(Math.random() * pool.length)];
-            gacha.apply();
-            // 4. 가챠 결과(구역 디버프)와 누적 기본치를 합산하여 최종 적 스탯 결정
-            enemyHpMod = baseEnemyHpMod + stageEnemyHpMod;
-            enemySpeedMod = baseEnemySpeedMod + stageEnemySpeedMod;
-            activeEffectText = gacha.name;
-            effectDisplayTimer = 120;
-bullets = []; enemyBullets = []; explosions = []; asteroids = [];
-            state = 'playing'; 
-            mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; 
-            spawnEnemies(isTrapNext); 
-            saveLastPlayInfo(); 
-if (isVoidArea) pauseBgm();
-else playRandomBgm();
-}
-        function saveLastPlayInfo() { localStorage.setItem('mazeGalagaLastPlay', JSON.stringify(lastPlayInfo)); }
-            function saveScore() { 
-            if (scoreSaved) return;
-            // 리더보드에 새길 이름을 입력받는 기능 추가
-            let playerName = window.prompt("Name, please (Max 10word):", "Player");
-            if (!playerName || playerName.trim() === "") playerName = "Player";
-            if (playerName.length > 10) playerName = playerName.substring(0, 10);
-            leaderboards.push({ name: playerName, score: score, stage: stage }); 
-            leaderboards.sort((a, b) => b.score - a.score); 
-            leaderboards = leaderboards.slice(0, 5); 
-            localStorage.setItem('mazeGalagaLeaderboard', JSON.stringify(leaderboards));
-            scoreSaved = true; 
-        }
-        function isColliding(r1, r2) { return r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y; }
-        function handlePlayerDeath() {
-            lives--; playExplosionSound(); hitBlinkTimer = 60;
-            if (lives <= 0) { state = 'gameover'; mobileControls.style.display = 'none'; mazeControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); } 
-            else { 
-                // 사망 시 포드 개수 및 속도 단계 1 감소 (파워 웨폰 상태는 그대로 유지)
-                player.weaponLevel = Math.max(1, player.weaponLevel - 1); 
-                permanentWeaponSpeedLevel = Math.max(0, permanentWeaponSpeedLevel - 1);
-                player.shield = false; 
-            }
-        }
-    function loop() { update(); draw(); requestAnimationFrame(loop); }
-    function handleStartScreen(e) { 
-    if (e.target.id === 'btnSettings') return; // 설정 버튼 클릭 시 게임 시작 방지
-    if (state === 'start') { 
-        initAudio(); 
-        resetGame(); 
-    } 
-}
-        const container = document.getElementById('gameContainer');
-        container.addEventListener('mousedown', handleStartScreen); container.addEventListener('touchstart', handleStartScreen);
-        document.getElementById('restartBtn').addEventListener('click', (e) => {
-            e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (state === 'start') {
+        ctx.drawImage(images.player, 280, 650, 40, 40);
+        ctx.drawImage(images.midBoss, 250, 150, 100, 200);
+        ctx.drawImage(images.minion, 140, 210, 80, 80);
+        ctx.drawImage(images.asteroid, 380, 200, 100, 100);
+        if (Math.floor(Date.now() / 500) % 2 === 0) { ctx.fillStyle = 'yellow'; ctx.font = '24px Arial'; ctx.textAlign = 'center'; ctx.fillText("- TOUCH TO START -", 300, 450); }
+    } else if (state === 'playing') {
+        drawUI();
+        asteroids.forEach(a => {
+            ctx.drawImage(images.asteroid, a.x, a.y, a.width, a.height);
+            ctx.fillStyle = 'white'; ctx.font = 'bold 24px Arial'; ctx.textAlign = 'center'; ctx.fillText(a.hp, a.x + a.width / 2, a.y + a.height / 2 + 8);
         });
-        loop(); 
+        if (Date.now() < silenceUntil) ctx.globalAlpha = 0.5;
+        if (hitBlinkTimer === 0 || Math.floor(hitBlinkTimer / 5) % 2 === 0) ctx.drawImage(images.player, player.x, player.y, player.width, player.height);
+        ctx.globalAlpha = 1.0;
 
-        // 게임 루프에 일시정지 로직 반영 (기존 loop 함수 교체)
-          function loop() { 
-            if (!isPaused) update(); 
-            draw(); 
-            requestAnimationFrame(loop); 
-        }
-        function handleStartScreen() { if (state === 'start') { initAudio(); resetGame(); } }
+        if (player.shield) { ctx.strokeStyle = '#00ff00'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(player.x + 20, player.y + 20, 30, 0, Math.PI * 2); ctx.stroke(); }
         
-        // --- 게임 오버 시 타이틀로 돌아가는 기존 버튼 ---
-        document.getElementById('restartBtn').addEventListener('click', (e) => {
-            e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        bullets.forEach(b => { 
+            if (b.isPower) { ctx.fillStyle = 'cyan'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center'; ctx.fillText('⭐', b.x + b.width / 2, b.y + b.height / 2 + 5); } 
+            else { ctx.fillStyle = 'yellow'; ctx.fillRect(b.x, b.y, b.width, b.height); } 
         });
 
-        // --- 톱니바퀴 열기 및 계속하기 버튼 로직 ---
-        function openSettings(e) {
-            e.preventDefault(); e.stopPropagation();
-            if (state === 'playing') isPaused = true;
-            settingsModal.style.display = 'flex';
-        }
-        document.getElementById('btnSettings').addEventListener('mousedown', openSettings);
-        document.getElementById('btnSettings').addEventListener('touchstart', openSettings, {passive: false});
-
-        document.getElementById('btnResume').addEventListener('click', () => {
-            isPaused = false;
-            settingsModal.style.display = 'none';
+        ctx.fillStyle = '#ff5500'; enemyBullets.forEach(eb => ctx.fillRect(eb.x, eb.y, eb.width, eb.height));
+        enemies.forEach(e => {
+            let img = e.type === 'mid-boss' ? images.midBoss : (e.type === 'boss' ? images.boss : (e.type === 'super-boss' ? images.superBoss : images.minion));
+            ctx.drawImage(img, e.x, e.y, e.width, e.height);
         });
 
-        // --- 설정 창에서 타이틀로 돌아가기 (컨트롤러 숨김 포함) ---
-        document.getElementById('btnExitToTitle').addEventListener('click', () => {
-            isPaused = false;
-            settingsModal.style.display = 'none';
-            mobileControls.style.display = 'none'; 
-            mazeControls.style.display = 'none';
-            state = 'start';
-            stopBgm();
-            score = 0; lives = 3; stage = 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        explosions.forEach(ex => {
+            ctx.beginPath();
+            if (ex.type === 'plasma') {
+                ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2); ctx.strokeStyle = `rgba(0, 255, 255, ${ex.alpha})`; ctx.lineWidth = 6; ctx.stroke();
+            } else if (ex.type === 'burst') {
+                ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(255, 100, 0, ${ex.alpha})`; ctx.fill();
+            } else if (ex.type === 'blackhole') {
+                ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
+                if (ex.state === 'implode') { ctx.fillStyle = 'black'; ctx.shadowBlur = 30; ctx.shadowColor = 'purple'; ctx.fill(); ctx.shadowBlur = 0; }
+                else { ctx.fillStyle = `rgba(255, 255, 255, ${1 - ex.radius / ex.maxRadius})`; ctx.fill(); }
+            } else if (ex.type === 'particles') {
+                ex.particles.forEach(p => { ctx.fillStyle = `rgba(170, 170, 170, ${p.life / 40})`; ctx.fillRect(p.x, p.y, 4, 4); });
+            }
         });
 
-        // 게임 루프 실행
-        loop();
-    </script>
-</body>
-</html>
+        if (effectDisplayTimer > 0) { ctx.fillStyle = 'yellow'; ctx.font = 'bold 30px Arial'; ctx.textAlign = 'center'; ctx.fillText(activeEffectText, canvas.width / 2, canvas.height / 2); effectDisplayTimer--; }
+    } else if (state === 'choosing') {
+        ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", 300, 100);
+        ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", 300, 150);
+    } else if (state === 'gameover' || state === 'missioncomplete') {
+        ctx.fillStyle = state === 'missioncomplete' ? 'yellow' : 'red'; ctx.textAlign = 'center'; ctx.font = 'bold 40px Arial'; ctx.fillText(state === 'missioncomplete' ? "I SALUTE YOU!" : "GAME OVER", 300, 100);
+        ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.fillText(`My score Stage: ${stage} | Score: ${score}`, 300, 150);
+        ctx.fillStyle = '#00ffff'; ctx.font = '22px Arial'; ctx.fillText("LEADERBOARD", 300, 200);
+        if (leaderboards.length === 0) ctx.fillText("No Record", 300, 250);
+        else leaderboards.forEach((e, i) => { ctx.fillText(`${i + 1}. ${e.name} ${e.score} (St ${e.stage})`, 300, 250 + (i * 30)); });
+    }
+    ctx.restore();
+}
+
+function generateNextRoom() { return [Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2].map(x => x || true); }
+
+function updateMazeControls() {
+    document.getElementById('mazeUp').style.visibility = currentExits[0] ? 'visible' : 'hidden';
+    document.getElementById('mazeRight').style.visibility = currentExits[1] ? 'visible' : 'hidden';
+    document.getElementById('mazeDown').style.visibility = currentExits[2] ? 'visible' : 'hidden';
+    document.getElementById('mazeLeft').style.visibility = currentExits[3] ? 'visible' : 'hidden';
+}
+
+function makeChoice(idx, dir) {
+    if (!currentExits[idx]) return;
+    stage++;
+    isVoidArea = false; currentWallThickness = 0; isTrapNext = false; portOverheatMultiplier = 1;
+    player.speed = permanentPlayerSpeed; stageEnemyHpMod = 0; stageEnemySpeedMod = 0; silenceUntil = 0;
+    baseEnemySpeedMod += 0.01;
+    let pool = getGachaPool(); let gacha = pool[Math.floor(Math.random() * pool.length)]; gacha.apply();
+    enemyHpMod = baseEnemyHpMod + stageEnemyHpMod; enemySpeedMod = baseEnemySpeedMod + stageEnemySpeedMod;
+    activeEffectText = gacha.name; effectDisplayTimer = 120;
+    bullets = []; enemyBullets = []; explosions = []; asteroids = [];
+    state = 'playing'; mobileControls.style.display = 'flex'; mazeControls.style.display = 'none';
+    spawnEnemies(isTrapNext); saveLastPlayInfo();
+    if (isVoidArea) pauseBgm(); else playRandomBgm();
+}
+
+function saveLastPlayInfo() { 
+    try { localStorage.setItem('mazeGalagaLastPlay', JSON.stringify(lastPlayInfo)); } catch(e) {}
+}
+
+function saveScore() {
+    if (scoreSaved) return;
+    let playerName = window.prompt("Name, please (Max 10word):", "Player");
+    if (!playerName || playerName.trim() === "") playerName = "Player";
+    if (playerName.length > 10) playerName = playerName.substring(0, 10);
+    leaderboards.push({ name: playerName, score: score, stage: stage });
+    leaderboards.sort((a, b) => b.score - a.score);
+    leaderboards = leaderboards.slice(0, 5);
+    try { localStorage.setItem('mazeGalagaLeaderboard', JSON.stringify(leaderboards)); } catch(e) {}
+    scoreSaved = true;
+}
+
+function isColliding(r1, r2) { return r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y; }
+
+function handlePlayerDeath() {
+    lives--; playExplosionSound(); hitBlinkTimer = 60;
+    if (lives <= 0) { state = 'gameover'; mobileControls.style.display = 'none'; mazeControls.style.display = 'none'; restartBtn.style.display = 'flex
