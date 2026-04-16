@@ -235,6 +235,8 @@ let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, co
 let bullets = [], enemyBullets = [], enemies = [], asteroids = [], virtualKeys = {}, currentExits = [true, true, true, true];
 let explosions = [], screenShake = 0, activeEffectText = "", effectDisplayTimer = 0, silenceUntil = 0, hitBlinkTimer = 0, scoreSaved = false, leaderboards = [];
 let lastShootTime = 0, isTrapNext = false;
+let currentPlayerImg = images.playerIdle; 
+const playerTempImg = new Image();
 
 try { 
     let lbData = localStorage.getItem('mazeGalagaLeaderboard');
@@ -347,11 +349,6 @@ function spawnEnemies(isTrap) {
     }
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) enemies.push({ type: 'minion', x: 60 + c * 50, y: startY + r * 40, width: 30, height: 30, speedX: 1 * enemySpeedMod, hp: 1 * enemyHpMod });
 }
-
-// update() 함수 내부 수정
-
-// 플레이어 현재 이미지 상태 저장용 변수 (update 함수 밖 상단에 선언하거나 resetGame에 초기화)
-let currentPlayerImg = images.playerIdle; 
 
 function update() {
     // ... (별 이동 로직) ...
@@ -528,9 +525,6 @@ function drawUI() {
     if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}초`;
     ctx.fillText(uiText, 10, 30);
 }
-
-// draw 함수 바로 위에 이 한 줄만 추가!
-const playerTempImg = new Image();
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
