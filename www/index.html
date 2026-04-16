@@ -318,6 +318,7 @@ function update() {
         let actualCooldown = (baseShootCooldown / wsMult[permanentWeaponSpeedLevel]) * portOverheatMultiplier;
         if (virtualKeys[' '] && Date.now() - lastShootTime > actualCooldown && Date.now() > silenceUntil) {
             playShootSound();
+            lastShootTime = Date.now(); // 쿨타임 초기화
             let bSpeed = -7, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
             let cx = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
             
