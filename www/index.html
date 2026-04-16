@@ -320,15 +320,40 @@ function update() {
             playShootSound();
             let bSpeed = -7, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
             let cx = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
-            if (player.weaponLevel === 0) bList.push({ x: cx, y: yTop });
-            else if (player.weaponLevel === 5) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop + 5 }); bList.push({ x: cx, y: yTop }); bList.push({ x: rmX, y: yTop + 5 }); bList.push({ x: rX, y: yBot }); }
-            else if (player.weaponLevel >= 6) { 
-                // 6레벨: 안쪽 직선 4발 + 바깥쪽 휘어지는 2발 (총 6발)
+            
+            // 1~4레벨 로직 (복구됨)
+            if (player.weaponLevel === 1) { 
+                bList.push({ x: cx, y: yTop }); 
+            }
+            else if (player.weaponLevel === 2) { 
+                bList.push({ x: lX + 5, y: yTop }); 
+                bList.push({ x: rX - 5, y: yTop }); 
+            }
+            else if (player.weaponLevel === 3) { 
+                bList.push({ x: lX, y: yBot }); 
+                bList.push({ x: cx, y: yTop }); 
+                bList.push({ x: rX, y: yBot }); 
+            }
+            else if (player.weaponLevel === 4) { 
                 bList.push({ x: lX, y: yBot }); 
                 bList.push({ x: lmX, y: yTop + 5 }); 
                 bList.push({ x: rmX, y: yTop + 5 }); 
                 bList.push({ x: rX, y: yBot }); 
-                // 기체 바깥쪽에서 생성되어 대각선으로 튕겨 나가는 발사체
+            }
+            // 5레벨 로직
+            else if (player.weaponLevel === 5) { 
+                bList.push({ x: lX, y: yBot }); 
+                bList.push({ x: lmX, y: yTop + 5 }); 
+                bList.push({ x: cx, y: yTop }); 
+                bList.push({ x: rmX, y: yTop + 5 }); 
+                bList.push({ x: rX, y: yBot }); 
+            }
+            // 6레벨 로직 (안쪽 4발 + 바깥쪽 휘어지는 2발)
+            else if (player.weaponLevel >= 6) { 
+                bList.push({ x: lX, y: yBot }); 
+                bList.push({ x: lmX, y: yTop + 5 }); 
+                bList.push({ x: rmX, y: yTop + 5 }); 
+                bList.push({ x: rX, y: yBot }); 
                 bList.push({ x: player.x - 15, y: yBot + 10, speedX: -6, isCurved: true });
                 bList.push({ x: player.x + player.width + 15 - bw, y: yBot + 10, speedX: 6, isCurved: true });
             }
