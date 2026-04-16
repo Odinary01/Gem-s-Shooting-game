@@ -242,7 +242,7 @@ function getGachaPool() {
         { name: " Weapon pod +1", type: "buff", apply: () => { player.weaponLevel = Math.min(5, player.weaponLevel + 1); } },
         { name: " Power Weapon (*)", type: "buff", apply: () => { if (player.isPowerWeapon) player.weaponLevel = Math.min(5, player.weaponLevel + 1); else player.isPowerWeapon = true; } },
         { name: " Weapon speed up", type: "buff", apply: () => { permanentWeaponSpeedLevel = Math.min(3, permanentWeaponSpeedLevel + 1); } },
-        { name: " Engine booster", type: "buff", apply: () => { permanentPlayerSpeed = 8; player.speed = permanentPlayerSpeed; } },
+        { name: " Engine booster", type: "buff", apply: () => { permanentPlayerSpeed = 4; player.speed = permanentPlayerSpeed; } },
         { name: " Plasma Shield (1 shot is invalid)", type: "buff", apply: () => { player.shield = true; } },
         { name: " Armor +1", type: "buff", apply: () => { lives++; } },
         { name: " Weapon pod -1", type: "debuff", apply: () => { player.weaponLevel = Math.max(1, player.weaponLevel - 1); } },
