@@ -113,7 +113,7 @@
     </div>
 
 <div id="mobileControls">
-    <div class="control-group" style="gab: 60px; ">
+    <div class="control-group" style="gap: 40px; ">
         <div class="control-btn" id="btnLeft"><img src="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%2300ffff'/%3E%3Cstop offset='100%25' stop-color='%230055aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 15 50 L 55 15 L 55 35 L 85 35 L 85 65 L 55 65 L 55 85 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E" alt="Left"></div>
         <div class="control-btn" id="btnRight"><img src="data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%230055aa'/%3E%3Cstop offset='100%25' stop-color='%2300ffff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 85 50 L 45 85 L 45 65 L 15 65 L 15 35 L 45 35 L 45 15 Z' fill='url(%23g)' stroke='%23ffffff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E" alt="Right"></div>
     </div>
@@ -240,8 +240,8 @@ bgmVolumeSlider.addEventListener('input', (e) => { bgmAudio.volume = parseFloat(
 
 function getGachaPool() {
     let pool = [
-        { name: " Weapon pod +1", type: "buff", apply: () => { player.weaponLevel = Math.min(5, player.weaponLevel + 1); } },
-        { name: " Power Weapon (*)", type: "buff", apply: () => { if (player.isPowerWeapon) player.weaponLevel = Math.min(5, player.weaponLevel + 1); else player.isPowerWeapon = true; } },
+        { name: " Weapon pod +1", type: "buff", apply: () => { player.weaponLevel = Math.min(10, player.weaponLevel + 1); } },
+        { name: " Power Weapon (*)", type: "buff", apply: () => { if (player.isPowerWeapon) player.weaponLevel = Math.min(10, player.weaponLevel + 1); else player.isPowerWeapon = true; } },
         { name: " Weapon speed up", type: "buff", apply: () => { permanentWeaponSpeedLevel = Math.min(3, permanentWeaponSpeedLevel + 1); } },
         { name: " Engine booster", type: "buff", apply: () => { permanentPlayerSpeed = 4; player.speed = permanentPlayerSpeed; } },
         { name: " Plasma Shield (1 shot is invalid)", type: "buff", apply: () => { player.shield = true; } },
@@ -320,18 +320,47 @@ function update() {
             playShootSound();
             let bSpeed = -7, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
             let cx = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
-            if (player.weaponLevel === 1) bList.push({ x: cx, y: yTop });
-            else if (player.weaponLevel === 2) { bList.push({ x: lX + 8, y: yBot }); bList.push({ x: rX - 8, y: yBot }); }
-            else if (player.weaponLevel === 3) { bList.push({ x: lX + 4, y: yBot }); bList.push({ x: cx, y: yTop }); bList.push({ x: rX - 4, y: yBot }); }
-            else if (player.weaponLevel === 4) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop + 5 }); bList.push({ x: rmX, y: yTop + 5 }); bList.push({ x: rX, y: yBot }); }
-            else if (player.weaponLevel >= 5) { bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop + 5 }); bList.push({ x: cx, y: yTop }); bList.push({ x: rmX, y: yTop + 5 }); bList.push({ x: rX, y: yBot }); }
-            bList.forEach(pos => bullets.push({ x: pos.x, y: pos.y, width: bw, height: bh, speedX: 0, speedY: bSpeed, power: pwrDmg, isPower: isPwr }));
+            // 각 무기 레벨마다 vx(가로로 튕겨나가는 힘)를 다르게 부여!
+            if (player.weaponLevel === 1) { 
+                bList.push({ x: cx, y: yTop, vx: 0 }); 
+            } else if (player.weaponLevel === 2) { 
+                bList.push({ x: lX + 8, y: yBot, vx: -5 }); 
+                bList.push({ x: rX - 8, y: yBot, vx: 5 }); 
+            } else if (player.weaponLevel === 3) { 
+                bList.push({ x: lX + 4, y: yBot, vx: -6 }); 
+                bList.push({ x: cx, y: yTop, vx: 0 }); 
+                bList.push({ x: rX - 4, y: yBot, vx: 6 }); 
+            } else if (player.weaponLevel === 4) { 
+                bList.push({ x: lX, y: yBot, vx: -7 }); 
+                bList.push({ x: lmX, y: yTop + 5, vx: -2.5 }); 
+                bList.push({ x: rmX, y: yTop + 5, vx: 2.5 }); 
+                bList.push({ x: rX, y: yBot, vx: 7 }); 
+            } else if (player.weaponLevel >= 5) { 
+                bList.push({ x: lX, y: yBot, vx: -8 }); 
+                bList.push({ x: lmX, y: yTop + 5, vx: -4 }); 
+                bList.push({ x: cx, y: yTop, vx: 0 }); 
+                bList.push({ x: rmX, y: yTop + 5, vx: 4 }); 
+                bList.push({ x: rX, y: yBot, vx: 8 }); 
+            }
+            // 여기서 speedX에 방금 설정한 pos.vx 값을 넣어줌
+            bList.forEach(pos => bullets.push({ x: pos.x, y: pos.y, width: bw, height: bh, speedX: pos.vx, speedY: bSpeed, power: pwrDmg, isPower: isPwr }));
             lastShootTime = Date.now();
-        }
-
+        }    
         for (let i = bullets.length - 1; i >= 0; i--) {
+            // 1. 총알을 가로(x)와 세로(y)로 이동시킴
+            bullets[i].x += bullets[i].speedX; 
             bullets[i].y += bullets[i].speedY;
-            if (bullets[i].y < 0) { bullets.splice(i, 1); continue; }
+            
+            // 2. ★가장 중요한 부분! 가로 속도를 점점 줄여서 위로 휘어지게 만듦
+            bullets[i].speedX *= 0.85; 
+
+            // 3. 총알이 화면 위쪽이나 양옆 밖으로 나가면 메모리에서 지움
+            if (bullets[i].y < 0 || bullets[i].x < 0 || bullets[i].x > canvas.width) { 
+                bullets.splice(i, 1); 
+                continue; 
+            }
+            
+            // ... (이 아래에 있는 hitAsteroid 관련 코드들은 그대로 둘 것!)
             let hitAsteroid = false;
             for (let a = asteroids.length - 1; a >= 0; a--) {
                 if (isColliding(bullets[i], asteroids[a])) {
