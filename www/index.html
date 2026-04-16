@@ -320,7 +320,7 @@ function update() {
             playShootSound();
             let bSpeed = -7, isPwr = player.isPowerWeapon, pwrDmg = isPwr ? 2 : 1, bw = isPwr ? 14 : 4, bh = isPwr ? 14 : 10, bList = [];
             let cx = player.x + player.width / 2 - bw / 2, lX = player.x, rX = player.x + player.width - bw, lmX = player.x + player.width * 0.25 - bw / 2, rmX = player.x + player.width * 0.75 - bw / 2, yTop = player.y, yBot = player.y + player.height - 10;
-        }
+            if (player.weaponLevel === 1) bList.push({ x: cx, y: yTop });        
             else if (player.weaponLevel === 5) { 
                 bList.push({ x: lX, y: yBot }); bList.push({ x: lmX, y: yTop + 5 }); bList.push({ x: cx, y: yTop }); bList.push({ x: rmX, y: yTop + 5 }); bList.push({ x: rX, y: yBot }); 
             }
@@ -419,7 +419,7 @@ function update() {
             else { state = 'choosing'; bullets = []; enemyBullets = []; currentExits = generateNextRoom(); updateMazeControls(); mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'grid'; }
         }
     }
-
+}
 function drawUI() {
     ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.textAlign = 'left';
     let uiText = `Stage: ${stage} | Score: ${score} | Armor: ${lives}`;
