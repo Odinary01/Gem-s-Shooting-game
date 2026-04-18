@@ -8,10 +8,10 @@
     <style>
         body { background-color: #222; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; }
         #gameContainer { position: relative; width: 100%; max-width: 576px; height: 100dvh; margin: 0 auto; background-color: #222; overflow: hidden; cursor: pointer; }
-         canvas { display: block; width: 100%; height: calc(100% - 220px); background-color: black; touch-action: none; border-bottom: 2px solid #555; }
+         canvas { display: block; width: 100%; height: calc(100% - 180px); background-color: black; touch-action: none; border-bottom: 2px solid #555; }
 
         /* 모바일 컨트롤러: 투명 배경 및 배치 최적화 */
-        #mobileControls { position: absolute; bottom: 0; left: 0; width: 100%; max-width: 600px; height: 220px; display: none; justify-content: space-between; align-items: center; box-sizing: border-box; pointer-events: none; z-index: 50; padding: 0 20px; }
+        #mobileControls { position: absolute; bottom: 0; left: 0; width: 100%; max-width: 600px; height: 180px; display: none; justify-content: space-between; align-items: center; box-sizing: border-box; pointer-events: none; z-index: 50; padding: 0 20px; }
 .control-group { 
     display: flex; 
     pointer-events: auto; 
@@ -77,7 +77,7 @@
         .control-btn img { width: 100%; height: 100%; object-fit: contain; }
 
         /* 메이즈 컨트롤러: 입체적인 SVG 방향키 */
-        #mazeControls { position: absolute; top: calc((100% - 220px) / 2); left: 50%; transform: translate(-50%, -50%); width: 220px; height: 220px; display: none; grid-template-columns: 70px 70px 70px; grid-template-rows: 70px 70px 70px; grid-template-areas: ". up ." "left . right" ". down ."; gap: 5px; z-index: 50; }
+        #mazeControls { position: absolute; top: calc((100% - 180px) / 2); left: 50%; transform: translate(-50%, -50%); width:220px; height: 180px; display: none; grid-template-columns: 70px 70px 70px; grid-template-rows: 70px 70px 70px; grid-template-areas: ". up ." "left . right" ". down ."; gap: 5px; z-index: 50; }
         .maze-btn { width: 70px; height: 70px; background-size: contain; background-repeat: no-repeat; background-position: center; background-color: transparent; border: none; opacity: 0.6; transition: transform 0.1s, opacity 0.2s; cursor: pointer; }
         .maze-btn.active { opacity: 1; filter: drop-shadow(0 0 10px cyan); }
 
@@ -88,7 +88,7 @@
 
         /* 설정창 스타일 */
         #btnSettings { position: absolute; bottom: 170px; left: 10px; width: 40px; height: 40px; font-size: 24px; background-color: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 999; }
-        #settingsModal { position: absolute; top: calc((100% - 220px) / 2); left: 50%; transform: translate(-50%,-50%); width: 300px; background-color: rgba(0, 0, 0, 0.9); border: 3px solid #00ffff; border-radius: 15px; padding: 25px; display: none; flex-direction: column; align-items: center; gap: 25px; z-index: 1000; box-sizing: border-box; }
+        #settingsModal { position: absolute; top: calc((100% - 180px) / 2); left: 50%; transform: translate(-50%,-50%); width: 300px; background-color: rgba(0, 0, 0, 0.9); border: 3px solid #00ffff; border-radius: 15px; padding: 25px; display: none; flex-direction: column; align-items: center; gap: 25px; z-index: 1000; box-sizing: border-box; }
         #settingsModal h2 { margin: 0; color: yellow; font-size: 28px; }
         .slider-container { display: flex; flex-direction: column; width: 100%; color: white; text-align: left; font-size: 18px; gap: 10px; }
         .modal-btn { background-color: #444; border: 2px solid white; color: white; padding: 12px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
