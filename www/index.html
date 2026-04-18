@@ -495,7 +495,28 @@ function draw() {
         }
         bullets.forEach(b => { if (b.isPower) { ctx.fillStyle = 'cyan'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center'; ctx.fillText('⭐', b.x + b.width / 2, b.y + b.height / 2 + 5); } else { ctx.fillStyle = 'yellow'; ctx.fillRect(b.x, b.y, b.width, b.height); } });
         ctx.fillStyle = '#ff5500'; enemyBullets.forEach(eb => ctx.fillRect(eb.x, eb.y, eb.width, eb.height));
-        enemies.forEach(e => { let img = e.type === 'mid-boss' ? images.midBoss : (e.type === 'boss' ? images.boss : (e.type === 'super-boss' ? images.superBoss : images.minion)); ctx.drawImage(img, e.x, e.y, e.width, e.height); });
+        // 화면에 졸병(minion)이 하나라도 살아있는지 미리 확인
+        let isMinionAlive = enemies.some(en => en.type === 'minion');
+        
+        enemies.forEach(e => { 
+            let img = e.type === 'mid-boss' ? images.midBoss : (e.type === 'boss' ? images.boss : (e.type === 'super-boss' ? images.superBoss : images.minion)); 
+            ctx.drawImage(img, e.x, e.y, e.width, e.height); 
+            
+            // 보스 무적(쉴드) 시각 효과 추가
+            if (e.type === 'boss' && isMinionAlive) {
+                ctx.save();
+                // 시간에 따라 투명도가 변하면서 반짝거리는 핑크색 쉴드
+                ctx.strokeStyle = `rgba(255, 50, 255, ${0.5 + Math.sin(Date.now() * 0.005) * 0.4})`; 
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                // 보스 기체 크기에 맞춘 타원형 포스필드 그리기
+                ctx.ellipse(e.x + e.width / 2, e.y + e.height / 2, e.width / 2 + 10, e.height / 2 + 10, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = `rgba(255, 50, 255, 0.1)`; 
+                ctx.fill();
+                ctx.restore();
+            }
+        });
         explosions.forEach(ex => {
             ctx.beginPath();
             if (ex.type === 'plasma') { ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2); ctx.strokeStyle = `rgba(0, 255, 255, ${ex.alpha})`; ctx.lineWidth = 6; ctx.stroke(); }
