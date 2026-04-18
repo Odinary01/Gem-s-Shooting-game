@@ -666,24 +666,30 @@ document.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 // 손가락을 화면에서 완전히 뗐을 때(touchend) 실행
-document.addEventListener('touchend', (e) => {
-    // 아직 화면에 남아있는 다른 손가락이 방향키를 누르고 있는지 다시 검사
-    let stillTouchingControl = false;
+function handleTouchStop(e) {
+    // 1. 손가락이 떨어지는 즉시 묻지도 따지지도 않고 모든 이동 강제 정지
+    virtualKeys['ArrowLeft'] = false;
+    virtualKeys['ArrowRight'] = false;
+    virtualKeys['ArrowUp'] = false;
+    virtualKeys['ArrowDown'] = false;
+
+    // 2. 만약 아직 화면에 남아있는 다른 손가락이 방향키를 누르고 있다면 그것만 다시 살림
     for (let i = 0; i < e.touches.length; i++) {
         const touch = e.touches[i];
         const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        
         if (targetElement && (targetElement.classList.contains('control-btn') || targetElement.closest('.control-btn'))) {
-            stillTouchingControl = true;
+            const btnId = targetElement.id || targetElement.closest('.control-btn').id;
+            if (btnId === 'btnLeft') virtualKeys['ArrowLeft'] = true;
+            if (btnId === 'btnRight') virtualKeys['ArrowRight'] = true;
+            if (btnId === 'btnUp') virtualKeys['ArrowUp'] = true;
+            if (btnId === 'btnDown') virtualKeys['ArrowDown'] = true;
         }
     }
-    
-    // 방향키 위에 닿아있는 손가락이 아예 없다면 이동을 완전히 멈춤
-    if (!stillTouchingControl) {
-        virtualKeys['ArrowLeft'] = false;
-        virtualKeys['ArrowRight'] = false;
-        virtualKeys['ArrowUp'] = false;
-        virtualKeys['ArrowDown'] = false;
-    }
-});
+}
+
+document.addEventListener('touchend', handleTouchStop);
+document.addEventListener('touchcancel', handleTouchStop);
+
 loop();
 </script>
