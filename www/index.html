@@ -634,5 +634,56 @@ function closeRewardModal(msg) {
     alert(msg);
     if (state === 'playing') isPaused = false;
 }
+// --- 슬라이드(드래그) 조작 지원 시스템 ---
+
+// 손가락이 화면 위를 미끄러질 때(touchmove) 실행
+document.addEventListener('touchmove', (e) => {
+    // 1. 일단 모든 이동 방향을 정지 (총알 발사 키 등은 건드리지 않음)
+    virtualKeys['ArrowLeft'] = false;
+    virtualKeys['ArrowRight'] = false;
+    virtualKeys['ArrowUp'] = false;
+    virtualKeys['ArrowDown'] = false;
+
+    // 2. 현재 화면에 닿아있는 '모든' 손가락의 위치를 추적 (멀티 터치 지원)
+    for (let i = 0; i < e.touches.length; i++) {
+        const touch = e.touches[i];
+        
+        // 손가락의 현재 X, Y 좌표 아래에 있는 HTML 요소(버튼)를 찾아냄
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        // 그 요소가 방향키(.control-btn)라면?
+        if (targetElement && (targetElement.classList.contains('control-btn') || targetElement.closest('.control-btn'))) {
+            e.preventDefault(); // 화면 전체가 스크롤되는 것을 방지
+            
+            // 어떤 방향키인지 확인하고 해당 방향 활성화
+            const btnId = targetElement.id || targetElement.closest('.control-btn').id;
+            if (btnId === 'btnLeft') virtualKeys['ArrowLeft'] = true;
+            if (btnId === 'btnRight') virtualKeys['ArrowRight'] = true;
+            if (btnId === 'btnUp') virtualKeys['ArrowUp'] = true;
+            if (btnId === 'btnDown') virtualKeys['ArrowDown'] = true;
+        }
+    }
+}, { passive: false });
+
+// 손가락을 화면에서 완전히 뗐을 때(touchend) 실행
+document.addEventListener('touchend', (e) => {
+    // 아직 화면에 남아있는 다른 손가락이 방향키를 누르고 있는지 다시 검사
+    let stillTouchingControl = false;
+    for (let i = 0; i < e.touches.length; i++) {
+        const touch = e.touches[i];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (targetElement && (targetElement.classList.contains('control-btn') || targetElement.closest('.control-btn'))) {
+            stillTouchingControl = true;
+        }
+    }
+    
+    // 방향키 위에 닿아있는 손가락이 아예 없다면 이동을 완전히 멈춤
+    if (!stillTouchingControl) {
+        virtualKeys['ArrowLeft'] = false;
+        virtualKeys['ArrowRight'] = false;
+        virtualKeys['ArrowUp'] = false;
+        virtualKeys['ArrowDown'] = false;
+    }
+});
 loop();
 </script>
