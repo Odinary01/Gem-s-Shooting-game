@@ -618,7 +618,7 @@ document.getElementById('btnRewardShield').addEventListener('click', (e) => {
     }
     player.shield++;
     lastAdTime = Date.now(); // ★ 보상을 수령하는 순간부터 10분 쿨타임 시작!
-    closeRewardModal(`Plasma shield +1! (Present: ${player.shield}개)`);
+    closeRewardModal(`Plasma shield +1! (Present: ${player.shield}.)`);
 });
 
 // 보상 2: 아머 +1 선택
