@@ -211,11 +211,21 @@ let savedMute = localStorage.getItem('mazeGalagaMuted');
 if (savedMute === 'true') { isMusicMuted = true; btnMusic.style.opacity = "0.5"; }
 
 bgmAudio.addEventListener('ended', () => { bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.play().catch(e => console.log(e)); });
-function playRandomBgm() { if (isMusicMuted || isVoidArea || state === 'start') return; if (!bgmAudio.paused) return; bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.play().catch(e => console.log(e)); }
+function playRandomBgm() { 
+    if (isMusicMuted || isVoidArea || state === 'start') return; 
+    if (!bgmAudio.paused && bgmAudio.src.includes('bgm')) return; 
+    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; 
+    bgmAudio.load(); // ★ 모바일 브라우저 오디오 준비를 위한 강제 로드
+    bgmAudio.play().catch(e => console.log(e)); 
+}
 function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 function pauseBgm() { bgmAudio.pause(); }
-function initAudio() { if (AudioContextClass && !audioCtx) audioCtx = new AudioContextClass(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
-
+function initAudio() { 
+    if (AudioContextClass && !audioCtx) audioCtx = new AudioContextClass(); 
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
+    // ★ 첫 터치 시 BGM 잠금을 완전 해제하는 트릭
+    if (!bgmAudio.src) { bgmAudio.src = 'data:audio/mp3;base64,'; bgmAudio.load(); } 
+}
 function playShootSound() { 
     if (!audioCtx || isVoidArea) return;
     const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
