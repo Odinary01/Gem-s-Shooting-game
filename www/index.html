@@ -184,7 +184,7 @@ for (let i = 0; i < 100; i++) stars.push({ x: Math.random() * 600, y: Math.rando
 const bgmFiles = ['bgm01.mp3', 'bgm02.mp3', 'bgm03.mp3', 'bgm04.mp3', 'bgm05.mp3', 'bgm06.mp3', 'bgm07.mp3', 'bgm08.mp3', 'bgm09.mp3', 'bgm10.mp3', 'bgm11.mp3', 'bgm12.mp3'];
 let bgmAudio = new Audio();
 let isMusicMuted = true;
-let bgmMasterVolume = 0.01;
+let bgmMasterVolume = 0.5;
 
 const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
 const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
