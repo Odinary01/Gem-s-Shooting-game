@@ -485,7 +485,7 @@ function drawUI() {
     if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}sec`;
     
     // ★ 이번 스테이지에서 뽑은 버프/디버프 텍스트를 상시 표기
-    if (activeEffectText !== "") {
+    if (activeEffectText !== "" && !activeEffectText.toUpperCase().includes("EMP")) {
         uiText += ` | 🎲 ${activeEffectText.trim()}`;
     }
     
