@@ -185,6 +185,7 @@ const bgmFiles = ['bgm01.mp3', 'bgm02.mp3', 'bgm03.mp3', 'bgm04.mp3', 'bgm05.mp3
 let bgmAudio = new Audio();
 let isMusicMuted = true;
 let bgmMasterVolume = 0.03;
+let lastPlayedBgm = "";    // 방금 재생한 곡을 기억할 변수
 
 const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
 const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
@@ -200,10 +201,8 @@ async function loadShootSound() {
     try {
         const response = await fetch('laser.ogg');
         const arrayBuffer = await response.arrayBuffer();
-        shootBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-    } catch (e) {
-        console.log("사운드 로드 실패: ", e);
-    }
+        shootBuffer = await audioCtx.decodeAudioData(arrayBuffer); } 
+        catch (e) { console.log("사운드 로드 실패: ", e); }
 }
 let state = 'start', score = 0, lives = 3, stage = 1, isPaused = false;
 const basePlayerSpeed = 2, baseShootCooldown = 400;
@@ -226,16 +225,21 @@ try { let savedData = localStorage.getItem('mazeGalagaLastPlay'); if (savedData 
 let savedVolume = localStorage.getItem('mazeGalagaVolume');
 if (savedVolume !== null) { bgmVolumeSlider.value = savedVolume; bgmAudio.volume = parseFloat(savedVolume) * bgmMasterVolume; }
 let savedMute = localStorage.getItem('mazeGalagaMuted');
-if (savedMute === 'false') { 
-    isMusicMuted = false; 
-    btnMusic.style.opacity = "1"; 
-} else { 
-    isMusicMuted = true; 
-    btnMusic.style.opacity = "0.5"; 
-}
+if (savedMute === 'false') { isMusicMuted = false; btnMusic.style.opacity = "1"; }
+else { isMusicMuted = true; btnMusic.style.opacity = "0.5"; }
+
+// 같은 곡이 연속으로 안 나오게 걸러주는 함수
+function getNextBgm() {
+    if (bgmFiles.length <= 1) return bgmFiles[0]; // 곡이 하나뿐일 경우 에러 방지
+    let nextBgm;
+    do { nextBgm = bgmFiles[Math.floor(Math.random() * bgmFiles.length)];
+    } while (nextBgm === lastPlayedBgm); // 방금 나온 곡이랑 똑같으면 다시 뽑기!
+    lastPlayedBgm = nextBgm; // 새로 뽑은 곡을 '방금 나온 곡'으로 저장
+    return nextBgm; }
+
 // 브금 한 곡이 끝났을 때 다음 곡 설정
 bgmAudio.addEventListener('ended', () => { 
-    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; 
+    bgmAudio.src = getNextBgm(); // ★ 바뀐 부분
     bgmAudio.volume = parseFloat(bgmVolumeSlider.value) * bgmMasterVolume; 
     bgmAudio.load(); 
     bgmAudio.play().catch(e => console.log(e)); 
@@ -245,11 +249,12 @@ bgmAudio.addEventListener('ended', () => {
 function playRandomBgm() { 
     if (isMusicMuted || isVoidArea || state === 'start') return; 
     if (!bgmAudio.paused) return; 
-    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; 
+    bgmAudio.src = getNextBgm(); // ★ 바뀐 부분
     bgmAudio.volume = parseFloat(bgmVolumeSlider.value) * bgmMasterVolume; 
     bgmAudio.load(); 
     bgmAudio.play().catch(e => console.log(e)); 
 }
+
 function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 function pauseBgm() { bgmAudio.pause(); }
 function initAudio() { if (AudioContextClass && !audioCtx) { audioCtx = new AudioContextClass(); loadShootSound(); } if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
@@ -276,7 +281,7 @@ function playExplosionSound() {
     for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
     const noise = audioCtx.createBufferSource(), filter = audioCtx.createBiquadFilter(), gain = audioCtx.createGain();
     noise.buffer = buffer; filter.type = 'lowpass'; filter.frequency.value = 800; noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-    gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); noise.start();
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); noise.start();
 }
 function bindTouch(el, vKey) {
     el.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); virtualKeys[vKey] = true; }, {passive: false});
