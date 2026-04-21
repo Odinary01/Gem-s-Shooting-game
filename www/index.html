@@ -98,6 +98,11 @@
 </head>
 <body>
 <div id="gameContainer">
+    <div id="ending1Choice" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); flex-direction: column; gap: 20px; z-index: 100; width: 80%;">
+        <h2 style="color: #ff5555; text-align: center; text-shadow: 2px 2px black; margin-bottom: 20px;">Destroyed The earth...<br>Do you want to continue your Revenge?</h2>
+        <button id="btnContinue51" style="padding: 15px; font-size: 20px; font-weight: bold; background-color: #aa0000; color: white; border: 2px solid white; border-radius: 10px; cursor: pointer;">🚀 Stage 51 </button>
+        <button id="btnEndingTitle" style="padding: 15px; font-size: 20px; font-weight: bold; background-color: #555; color: white; border: 2px solid white; border-radius: 10px; cursor: pointer;">🏠 Title </button>
+    </div>
     <canvas id="gameCanvas" width="576" height="750"></canvas>
     
     <div id="btnSettings">⚙️</div>
@@ -196,6 +201,7 @@ let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, co
 let bullets = [], enemyBullets = [], enemies = [], asteroids = [], virtualKeys = {}, currentExits = [true, true, true, true];
 let explosions = [], screenShake = 0, activeEffectText = "", effectDisplayTimer = 0, silenceUntil = 0, hitBlinkTimer = 0, scoreSaved = false, leaderboards = [];
 let lastShootTime = 0, isTrapNext = false;
+let endingTimer = 0;
 
 // 플레이어 애니메이션 전용 변수 (전역 공간)
 let currentPlayerImg = svgIdle;
@@ -456,8 +462,21 @@ function update() {
             }
         }
         if (enemies.length === 0 && explosions.length === 0) {
-            if (stage >= 100) { state = 'missioncomplete'; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); }
-            else { state = 'choosing'; bullets = []; enemyBullets = []; currentExits = generateNextRoom(); updateMazeControls(); mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'grid'; }
+            bullets = []; enemyBullets = []; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none';
+            
+            if (stage === 1 && state !== 'ending1_choice') {
+                state = 'ending1'; 
+                endingTimer = 0;
+            } else if (stage >= 2) {
+                state = 'ending2'; 
+                endingTimer = 0;
+                saveScore();
+            } else if (state !== 'ending1_choice') {
+                state = 'choosing'; 
+                currentExits = generateNextRoom(); 
+                updateMazeControls(); 
+                mazeControls.style.display = 'grid'; 
+            }
         }
     }
 }
@@ -529,9 +548,67 @@ function draw() {
         // 포즈 텍스트
         if (isPaused) { ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = 'yellow'; ctx.font = 'bold 40px Arial'; ctx.textAlign = 'center'; ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2); }
     } else if (state === 'choosing') { ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", 300, 100); ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", 300, 150); }
+      else if (state === 'ending1' || state === 'ending1_choice') {
+        endingTimer++;
+        // 배경: 잿빛의 파괴된 지구
+        let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, "#442222"); grad.addColorStop(1, "#110000");
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 부서진 지형
+        ctx.fillStyle = "#222"; ctx.beginPath();
+        ctx.moveTo(0, canvas.height - 100); ctx.lineTo(150, canvas.height - 180);
+        ctx.lineTo(350, canvas.height - 130); ctx.lineTo(canvas.width, canvas.height - 200);
+        ctx.lineTo(canvas.width, canvas.height); ctx.lineTo(0, canvas.height); ctx.fill();
+
+        // 피어오르는 연기 구름 애니메이션
+        ctx.fillStyle = "rgba(80, 80, 80, 0.4)";
+        for(let i = 0; i < 6; i++) {
+            let smokeY = canvas.height - 100 - ((endingTimer * 0.8 + i * 50) % 300);
+            let smokeX = 80 + i * 80 + Math.sin(endingTimer * 0.03 + i) * 30;
+            let radius = 30 + ((endingTimer * 0.8 + i * 50) % 300) * 0.4;
+            ctx.beginPath(); ctx.arc(smokeX, smokeY, radius, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // 착륙한 전투기 & 내린 주인공
+        ctx.drawImage(playerTempImg, 120, canvas.height - 180, 60, 60);
+        ctx.fillStyle = "black"; ctx.fillRect(200, canvas.height - 150, 10, 20); // 몸통
+        ctx.beginPath(); ctx.arc(205, canvas.height - 155, 6, 0, Math.PI*2); ctx.fill(); // 머리
+
+        if (state === 'ending1') {
+            ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.font = 'bold 24px Arial';
+            ctx.fillText("지구는 이미 폐허가 되어 있었다...", canvas.width/2, canvas.height/2);
+            ctx.font = '16px Arial'; ctx.fillText("- TOUCH TO CONTINUE -", canvas.width/2, canvas.height/2 + 40);
+        }
+    } else if (state === 'ending2') {
+        endingTimer++;
+        // 배경: 푸르고 맑은 자연 행성
+        let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, "#88ccff"); grad.addColorStop(1, "#ddffdd");
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 평화로운 푸른 언덕
+        ctx.fillStyle = "#55aa55"; ctx.beginPath();
+        ctx.arc(canvas.width/2, canvas.height + 250, 450, 0, Math.PI*2); ctx.fill();
+
+        // 착륙한 전투기 & 자연을 걷는 주인공
+        ctx.drawImage(playerTempImg, canvas.width/2 - 100, canvas.height - 220, 60, 60);
+        ctx.fillStyle = "#222"; ctx.fillRect(canvas.width/2 + 30, canvas.height - 190, 10, 20);
+        ctx.beginPath(); ctx.arc(canvas.width/2 + 35, canvas.height - 195, 6, 0, Math.PI*2); ctx.fill();
+
+        ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 32px Arial';
+        ctx.fillText(".......", canvas.width/2, canvas.height/2 - 30);
+        ctx.fillStyle = 'white'; ctx.font = 'bold 24px Arial';
+        ctx.fillText("What will you do?", canvas.width/2, canvas.height/2 + 15);
+        
+        if (endingTimer > 100) {
+            restartBtn.style.display = 'flex'; restartBtn.innerText = "FINISH (TO TITLE)";
+        }
+    }
     else if (state === 'gameover' || state === 'missioncomplete') { ctx.fillStyle = state === 'missioncomplete' ? 'yellow' : 'red'; ctx.textAlign = 'center'; ctx.font = 'bold 40px Arial'; ctx.fillText(state === 'missioncomplete' ? "I SALUTE YOU!" : "GAME OVER", 300, 100); ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.fillText(`My score Stage: ${stage} | Score: ${score}`, 300, 150); ctx.fillStyle = '#00ffff'; ctx.font = '22px Arial'; ctx.fillText("LEADERBOARD", 300, 200); if (leaderboards.length === 0) ctx.fillText("No Record", 300, 250); else leaderboards.forEach((e, i) => { ctx.fillText(`${i + 1}. ${e.name} ${e.score} (St ${e.stage})`, 300, 250 + (i * 30)); }); }
-    ctx.restore();
-}
+    ctx.restore(); }
 function generateNextRoom() { return [Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2].map(x => x || true); }
 function updateMazeControls() { document.getElementById('mazeUp').style.visibility = currentExits[0] ? 'visible' : 'hidden'; document.getElementById('mazeRight').style.visibility = currentExits[1] ? 'visible' : 'hidden'; document.getElementById('mazeDown').style.visibility = currentExits[2] ? 'visible' : 'hidden'; document.getElementById('mazeLeft').style.visibility = currentExits[3] ? 'visible' : 'hidden'; }
 function makeChoice(idx, dir) { if (!currentExits[idx]) return; stage++; isVoidArea = false; currentWallThickness = 0; isTrapNext = false; portOverheatMultiplier = 1; player.speed = permanentPlayerSpeed; stageEnemyHpMod = 0; stageEnemySpeedMod = 0; silenceUntil = 0; baseEnemySpeedMod += 0.01; let pool = getGachaPool(); let gacha = pool[Math.floor(Math.random() * pool.length)]; gacha.apply(); enemyHpMod = baseEnemyHpMod + stageEnemyHpMod; enemySpeedMod = baseEnemySpeedMod + stageEnemySpeedMod; activeEffectText = gacha.name; effectDisplayTimer = 120; bullets = []; enemyBullets = []; explosions = []; asteroids = []; state = 'playing'; mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'flex'; spawnEnemies(isTrapNext); saveLastPlayInfo(); if (isVoidArea) pauseBgm(); else playRandomBgm(); }
@@ -549,7 +626,35 @@ function handlePlayerDeath() { if (player.shield > 0) {
  { state = 'gameover'; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); } else { player.weaponLevel = Math.max(1, player.weaponLevel - 1); permanentWeaponSpeedLevel = Math.max(0, permanentWeaponSpeedLevel - 1); player.shield = 0; } }
 }
 function loop() { if (!isPaused) update(); draw(); requestAnimationFrame(loop); }
-function handleStartScreen(e) { if (e && e.target && (e.target.closest('#btnSettings') || e.target.closest('#settingsModal') || e.target.closest('#btnPause') || e.target.closest('#btnMusic'))) return; if (state === 'start') { initAudio(); resetGame(); } }
+function handleStartScreen(e) { 
+    if (e && e.target && (e.target.closest('#btnSettings') || e.target.closest('#settingsModal') || e.target.closest('#btnPause') || e.target.closest('#btnMusic'))) return; 
+    
+    if (state === 'start') { 
+        initAudio(); resetGame(); 
+    } else if (state === 'ending1') { 
+        // 엔딩 1 화면을 터치하면 선택창 띄우기
+        state = 'ending1_choice'; 
+        document.getElementById('ending1Choice').style.display = 'flex'; 
+    } 
+}
+
+// 51스테이지 진행 버튼
+document.getElementById('btnContinue51').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('ending1Choice').style.display = 'none';
+    state = 'choosing';
+    currentExits = generateNextRoom();
+    updateMazeControls();
+    mazeControls.style.display = 'grid';
+});
+
+// 타이틀 귀환 버튼
+document.getElementById('btnEndingTitle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('ending1Choice').style.display = 'none';
+    saveScore(); // 50스테이지 점수 기록
+    state = 'start'; stopBgm(); score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
 const container = document.getElementById('gameContainer'); container.addEventListener('mousedown', handleStartScreen); container.addEventListener('touchstart', handleStartScreen, {passive: false});
 document.getElementById('restartBtn').addEventListener('click', (e) => { e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
 function openSettings(e) { e.preventDefault(); e.stopPropagation(); if (state === 'playing') isPaused = true; settingsModal.style.display = 'flex'; }
