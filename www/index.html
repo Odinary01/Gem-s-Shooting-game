@@ -482,18 +482,35 @@ function update() {
 }
 function drawUI() {
     let uiText = `Stage: ${stage} | Score: ${score} | Armor: ${lives}`;
-    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}sec`;
+    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}초`;
     
-    ctx.fillStyle = 'white'; ctx.font = '20px Arial';
-    let x, y;
+    ctx.save();
+    ctx.fillStyle = 'white'; 
+    ctx.font = '20px Arial';
+    ctx.textAlign = 'left'; 
     
-    // uiPosition (0: 좌측 상단, 1: 우측 상단, 2: 우측 하단, 3: 좌측 하단)
-    if (uiPosition === 0) { ctx.textAlign = 'left'; x = 10; y = 30; } 
-    else if (uiPosition === 1) { ctx.textAlign = 'right'; x = canvas.width - 10; y = 30; } 
-    else if (uiPosition === 2) { ctx.textAlign = 'right'; x = canvas.width - 10; y = canvas.height - 20; } 
-    else if (uiPosition === 3) { ctx.textAlign = 'left'; x = 10; y = canvas.height - 20; } 
+    if (uiPosition === 0) { 
+        // 상단: 머리가 위(바깥)를 향함
+        ctx.translate(10, 30);
+        ctx.fillText(uiText, 0, 0);
+    } else if (uiPosition === 1) { 
+        // 우측: 머리가 오른쪽(바깥)을 향함 (90도 회전)
+        ctx.translate(canvas.width - 30, 10);
+        ctx.rotate(Math.PI / 2); 
+        ctx.fillText(uiText, 0, 0);
+    } else if (uiPosition === 2) { 
+        // 하단: 머리가 아래(바깥)를 향함 (180도 뒤집기)
+        ctx.translate(canvas.width - 10, canvas.height - 30);
+        ctx.rotate(Math.PI); 
+        ctx.fillText(uiText, 0, 0);
+    } else if (uiPosition === 3) { 
+        // 좌측: 머리가 왼쪽(바깥)을 향함 (-90도 회전)
+        ctx.translate(30, canvas.height - 10);
+        ctx.rotate(-Math.PI / 2); 
+        ctx.fillText(uiText, 0, 0);
+    }
     
-    ctx.fillText(uiText, x, y);
+    ctx.restore();
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.save();
