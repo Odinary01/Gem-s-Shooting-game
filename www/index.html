@@ -184,6 +184,7 @@ for (let i = 0; i < 100; i++) stars.push({ x: Math.random() * 600, y: Math.rando
 const bgmFiles = ['bgm01.mp3', 'bgm02.mp3', 'bgm03.mp3', 'bgm04.mp3', 'bgm05.mp3', 'bgm06.mp3', 'bgm07.mp3', 'bgm08.mp3', 'bgm09.mp3', 'bgm10.mp3', 'bgm11.mp3', 'bgm12.mp3'];
 let bgmAudio = new Audio();
 let isMusicMuted = true;
+let bgmMasterVolume = 0.15;
 
 const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
 const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
@@ -234,8 +235,8 @@ if (savedMute === 'false') {
     isMusicMuted = true; 
     btnMusic.style.opacity = "0.5"; 
 }
-bgmAudio.addEventListener('ended', () => { bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.play().catch(e => console.log(e)); });
-function playRandomBgm() { if (isMusicMuted || isVoidArea || state === 'start') return; if (!bgmAudio.paused) return; bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.play().catch(e => console.log(e)); }
+bgmAudio.addEventListener('ended', () => { bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudioVolume = bgmMasterVolume; bgmAudio.load(); bgmAudio.play().catch(e => console.log(e)); });
+function playRandomBgm() { if (isMusicMuted || isVoidArea || state === 'start') return; if (!bgmAudio.paused) return; bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudioVolume = bgmMasterVolume; bgmAudio.load(); bgmAudio.play().catch(e => console.log(e)); }
 function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 function pauseBgm() { bgmAudio.pause(); }
 function initAudio() { if (AudioContextClass && !audioCtx) { audioCtx = new AudioContextClass(); loadShootSound(); } if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
