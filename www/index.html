@@ -93,7 +93,7 @@
         .slider-container { display: flex; flex-direction: column; width: 100%; color: white; text-align: left; font-size: 18px; gap: 10px; }
         .modal-btn { background-color: #444; border: 2px solid white; color: white; padding: 12px 20px; font-size: 18px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
         .modal-btn.exit { background-color: #aa0000; border-color: #ff5555; }
-        #restartBtn { position: absolute; bottom: 250px; left: 50%; transform: translateX(-50%); display: none; background-color: rgba(0, 255, 255, 0.3); font-weight: bold; border-radius: 15px; padding: 20px 40px; font-size: 32px; border: 3px solid rgba(255, 255, 255, 0.5); color: white; cursor: pointer; z-index: 10; }
+        #restartBtn { position: absolute; bottom: 250px; left: 50%; transform: translateX(-50%); display: none; background-color: rgba(0, 255, 255, 0.3); font-weight: bold; border-radius: 15px; padding: 10px 20px; font-size: 18px; border: 3px solid rgba(255, 255, 255, 0.5); color: white; cursor: pointer; z-index: 10; }
     </style>
 </head>
 <body>
@@ -602,9 +602,9 @@ function draw() {
 
         ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 32px Arial';
-        ctx.fillText(".......", canvas.width/2, canvas.height/2 - 30);
+        ctx.fillText(".......", canvas.width/2, canvas.height/2 + 60);
         ctx.fillStyle = 'white'; ctx.font = 'bold 24px Arial';
-        ctx.fillText("What will you do?", canvas.width/2, canvas.height/2 + 15);
+        ctx.fillText("What will you do?", canvas.width/2, canvas.height/2 + 105);
         
             if (endingTimer > 100) {
             restartBtn.style.display = 'flex'; 
