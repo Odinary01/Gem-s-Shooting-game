@@ -281,7 +281,7 @@ function playExplosionSound() {
     for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
     const noise = audioCtx.createBufferSource(), filter = audioCtx.createBiquadFilter(), gain = audioCtx.createGain();
     noise.buffer = buffer; filter.type = 'lowpass'; filter.frequency.value = 800; noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); noise.start();
+    gain.gain.setValueAtTime(0.02, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); noise.start();
 }
 function bindTouch(el, vKey) {
     el.addEventListener('touchstart', (e) => { e.preventDefault(); initAudio(); virtualKeys[vKey] = true; }, {passive: false});
