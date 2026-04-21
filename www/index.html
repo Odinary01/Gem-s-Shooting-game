@@ -200,7 +200,7 @@ let baseEnemySpeedMod = 1, baseEnemyHpMod = 1, stageEnemySpeedMod = 0, stageEnem
 let player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: 0 };
 let bullets = [], enemyBullets = [], enemies = [], asteroids = [], virtualKeys = {}, currentExits = [true, true, true, true];
 let explosions = [], screenShake = 0, activeEffectText = "", effectDisplayTimer = 0, silenceUntil = 0, hitBlinkTimer = 0, scoreSaved = false, leaderboards = [];
-let lastShootTime = 0, isTrapNext = false;
+let lastShootTime = 0, isTrapNext = false; uiPosition = 0;
 let endingTimer = 0;
 
 // 플레이어 애니메이션 전용 변수 (전역 공간)
@@ -290,7 +290,7 @@ function resetGame() {
     permanentPlayerSpeed = basePlayerSpeed; currentWallThickness = 0; baseEnemySpeedMod = 1; baseEnemyHpMod = 1; stageEnemySpeedMod = 0; stageEnemyHpMod = 0; enemySpeedMod = 1; enemyHpMod = 1;
     player = { x: 280, y: 650, width: 40, height: 40, speed: basePlayerSpeed, color: '#00ffff', weaponLevel: 1, isPowerWeapon: false, shield: 0 };
     bullets = []; enemyBullets = []; currentExits = [true, true, true, true]; asteroids = []; explosions = [];
-    screenShake = 0; activeEffectText = ""; effectDisplayTimer = 0; silenceUntil = 0; hitBlinkTimer = 0; scoreSaved = false; virtualKeys = {}; lastShootTime = 0;
+    screenShake = 0; activeEffectText = ""; effectDisplayTimer = 0; silenceUntil = 0; hitBlinkTimer = 0; scoreSaved = false; virtualKeys = {}; lastShootTime = 0; uiPosition = 0;
     mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; restartBtn.style.display = 'none'; 
     if(btnPause) btnPause.style.display = 'flex';
     spawnEnemies(false); saveLastPlayInfo(); playRandomBgm();
@@ -481,10 +481,19 @@ function update() {
     }
 }
 function drawUI() {
-    ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.textAlign = 'left';
     let uiText = `Stage: ${stage} | Score: ${score} | Armor: ${lives}`;
-    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}초`;
-    ctx.fillText(uiText, 10, 30);
+    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}sec`;
+    
+    ctx.fillStyle = 'white'; ctx.font = '20px Arial';
+    let x, y;
+    
+    // uiPosition (0: 좌측 상단, 1: 우측 상단, 2: 우측 하단, 3: 좌측 하단)
+    if (uiPosition === 0) { ctx.textAlign = 'left'; x = 10; y = 30; } 
+    else if (uiPosition === 1) { ctx.textAlign = 'right'; x = canvas.width - 10; y = 30; } 
+    else if (uiPosition === 2) { ctx.textAlign = 'right'; x = canvas.width - 10; y = canvas.height - 20; } 
+    else if (uiPosition === 3) { ctx.textAlign = 'left'; x = 10; y = canvas.height - 20; } 
+    
+    ctx.fillText(uiText, x, y);
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.save();
@@ -617,7 +626,47 @@ function draw() {
     ctx.restore(); }
 function generateNextRoom() { return [Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2].map(x => x || true); }
 function updateMazeControls() { document.getElementById('mazeUp').style.visibility = currentExits[0] ? 'visible' : 'hidden'; document.getElementById('mazeRight').style.visibility = currentExits[1] ? 'visible' : 'hidden'; document.getElementById('mazeDown').style.visibility = currentExits[2] ? 'visible' : 'hidden'; document.getElementById('mazeLeft').style.visibility = currentExits[3] ? 'visible' : 'hidden'; }
-function makeChoice(idx, dir) { if (!currentExits[idx]) return; stage++; isVoidArea = false; currentWallThickness = 0; isTrapNext = false; portOverheatMultiplier = 1; player.speed = permanentPlayerSpeed; stageEnemyHpMod = 0; stageEnemySpeedMod = 0; silenceUntil = 0; baseEnemySpeedMod += 0.01; let pool = getGachaPool(); let gacha = pool[Math.floor(Math.random() * pool.length)]; gacha.apply(); enemyHpMod = baseEnemyHpMod + stageEnemyHpMod; enemySpeedMod = baseEnemySpeedMod + stageEnemySpeedMod; activeEffectText = gacha.name; effectDisplayTimer = 120; bullets = []; enemyBullets = []; explosions = []; asteroids = []; state = 'playing'; mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'flex'; spawnEnemies(isTrapNext); saveLastPlayInfo(); if (isVoidArea) pauseBgm(); else playRandomBgm(); }
+function makeChoice(idx, dir) { 
+    if (!currentExits[idx]) return; 
+    stage++; 
+
+    // ★ 방향에 따라 UI 위치를 빙글빙글 돌리는 로직 추가
+    if (dir === 'left') uiPosition = (uiPosition + 1) % 4;        
+    else if (dir === 'right') uiPosition = (uiPosition + 3) % 4;  
+    else if (dir === 'down') uiPosition = (uiPosition + 2) % 4;   
+
+    isVoidArea = false; 
+    currentWallThickness = 0; 
+    isTrapNext = false; 
+    portOverheatMultiplier = 1; 
+    player.speed = permanentPlayerSpeed; 
+    stageEnemyHpMod = 0; 
+    stageEnemySpeedMod = 0; 
+    silenceUntil = 0; 
+    baseEnemySpeedMod += 0.01; 
+    
+    let pool = getGachaPool(); 
+    let gacha = pool[Math.floor(Math.random() * pool.length)]; 
+    gacha.apply(); 
+    
+    enemyHpMod = baseEnemyHpMod + stageEnemyHpMod; 
+    enemySpeedMod = baseEnemySpeedMod + stageEnemySpeedMod; 
+    activeEffectText = gacha.name; 
+    effectDisplayTimer = 120; 
+    
+    bullets = []; 
+    enemyBullets = []; 
+    explosions = []; 
+    asteroids = []; 
+    state = 'playing'; 
+    mobileControls.style.display = 'flex'; 
+    mazeControls.style.display = 'none'; 
+    if(btnPause) btnPause.style.display = 'flex'; 
+    
+    spawnEnemies(isTrapNext); 
+    saveLastPlayInfo(); 
+    if (isVoidArea) pauseBgm(); else playRandomBgm(); 
+}
 function saveLastPlayInfo() { try { localStorage.setItem('mazeGalagaLastPlay', JSON.stringify(lastPlayInfo)); } catch(e) {} }
 function saveScore() { if (scoreSaved) return; let playerName = window.prompt("Name, please (Max 10word):", "Player"); if (!playerName || playerName.trim() === "") playerName = "Player"; if (playerName.length > 10) playerName = playerName.substring(0, 10); leaderboards.push({ name: playerName, score: score, stage: stage }); leaderboards.sort((a, b) => b.score - a.score); leaderboards = leaderboards.slice(0, 5); try { localStorage.setItem('mazeGalagaLeaderboard', JSON.stringify(leaderboards)); } catch(e) {} scoreSaved = true; }
 function isColliding(r1, r2) { return r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y; }
