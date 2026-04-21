@@ -229,9 +229,17 @@ function pauseBgm() { bgmAudio.pause(); }
 function initAudio() { if (AudioContextClass && !audioCtx) audioCtx = new AudioContextClass(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
 function playShootSound() { 
     if (!audioCtx || isVoidArea) return;
-    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
-    const t = audioCtx.currentTime + 0.01; osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
-    gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1); osc.start(t); osc.stop(t + 0.1);
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); 
+    osc.type = 'triangle'; 
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    const t = audioCtx.currentTime + 0.01; 
+    osc.frequency.setValueAtTime(600, t); 
+    osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+    
+    // 소리가 끝날 때 뚝 끊기지 않고 자연스럽게 사라지도록(Fade-out) 조절
+    gain.gain.setValueAtTime(0.05, t); 
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);     
+    osc.start(t); osc.stop(t + 0.1);
 }
 function playExplosionSound() {
     if (!audioCtx || isVoidArea) return;
