@@ -295,9 +295,21 @@ function toggleMusic(e) {
 btnMusic.addEventListener('mousedown', toggleMusic); btnMusic.addEventListener('touchstart', toggleMusic, {passive: false});
 function togglePause(e) {
     if (e) { e.preventDefault(); e.stopPropagation(); }
-    if (state === 'playing') { isPaused = !isPaused; if (!isPaused) settingsModal.style.display = 'none'; }
+    if (state === 'playing') { 
+        isPaused = !isPaused; 
+        if (isPaused) {
+            // 게임이 일시정지되면 브금도 그 자리에 정지
+            bgmAudio.pause();
+        } else {
+            // 게임이 재개될 때 설정창 닫기
+            settingsModal.style.display = 'none';
+            // 음소거 상태가 아니고 보이드 영역도 아니라면 정지됐던 지점에서 재생 재개
+            if (!isMusicMuted && !isVoidArea) {
+                bgmAudio.play().catch(e => console.log(e));
+            }
+        }
+    }
 }
-if (btnPause) { btnPause.addEventListener('mousedown', togglePause); btnPause.addEventListener('touchstart', togglePause, {passive: false}); }
 bgmVolumeSlider.addEventListener('input', (e) => { 
     bgmAudio.volume = parseFloat(e.target.value) * bgmMasterVolume; 
     localStorage.setItem('mazeGalagaVolume', e.target.value); 
@@ -780,7 +792,7 @@ const container = document.getElementById('gameContainer'); container.addEventLi
 document.getElementById('restartBtn').addEventListener('click', (e) => { e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
 function openSettings(e) { e.preventDefault(); e.stopPropagation(); if (state === 'playing') isPaused = true; settingsModal.style.display = 'flex'; }
 document.getElementById('btnSettings').addEventListener('mousedown', openSettings); document.getElementById('btnSettings').addEventListener('touchstart', openSettings, {passive: false});
-document.getElementById('btnResume').addEventListener('click', () => { isPaused = false; settingsModal.style.display = 'none'; });
+document.getElementById('btnResume').addEventListener('click', (e) => { togglePause(e); });
 document.getElementById('btnExitToTitle').addEventListener('click', () => { isPaused = false; settingsModal.style.display = 'none'; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; state = 'start'; stopBgm(); score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
 // --- 보상형 광고 시스템 ---
 let lastAdTime = 0; // 마지막으로 보상을 받은 시간 (기록용)
