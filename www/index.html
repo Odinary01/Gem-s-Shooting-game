@@ -189,7 +189,6 @@ let bgmMasterVolume = 0.03;
 const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
 const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
 const btnMusic = document.getElementById('btnMusic');
-const btnPause = document.getElementById('btnPause');
 const settingsModal = document.getElementById('settingsModal');
 const bgmVolumeSlider = document.getElementById('bgmVolume');
 
@@ -287,25 +286,26 @@ function bindTouch(el, vKey) {
     el.addEventListener('mouseleave', (e) => { virtualKeys[vKey] = false; });
 }
 bindTouch(document.getElementById('btnLeft'), 'ArrowLeft'); bindTouch(document.getElementById('btnRight'), 'ArrowRight'); bindTouch(document.getElementById('btnShoot'), ' ');
-function toggleMusic(e) {
-    e.preventDefault(); isMusicMuted = !isMusicMuted; btnMusic.style.opacity = isMusicMuted ? "0.5" : "1";
+ isMusicMuted = !isMusicMuted; btnMusic.style.opacity = isMusicMuted ? "0.5" : "1";
     localStorage.setItem('mazeGalagaMuted', isMusicMuted);
-    if (isMusicMuted) pauseBgm(); else if (state !== 'start' && !isVoidArea) playRandomBgm();
-}
+    if (isMusicMuted) pauseBgm(); else if (state !== 'start' && !isVoidArea) playRandomBgm(); 
+
 btnMusic.addEventListener('mousedown', toggleMusic); btnMusic.addEventListener('touchstart', toggleMusic, {passive: false});
 function togglePause(e) {
-    if (e) { e.preventDefault(); e.stopPropagation(); }
+    if (e) { 
+        e.preventDefault(); 
+        e.stopPropagation(); // ★ 클릭 신호가 배경으로 전달되는 것을 완벽히 차단합니다.
+    }
+    
     if (state === 'playing') { 
         isPaused = !isPaused; 
         if (isPaused) {
-            // 게임이 일시정지되면 브금도 그 자리에 정지
+            settingsModal.style.display = 'flex';
             bgmAudio.pause();
         } else {
-            // 게임이 재개될 때 설정창 닫기
             settingsModal.style.display = 'none';
-            // 음소거 상태가 아니고 보이드 영역도 아니라면 정지됐던 지점에서 재생 재개
             if (!isMusicMuted && !isVoidArea) {
-                bgmAudio.play().catch(e => console.log(e));
+                bgmAudio.play().catch(err => console.log(err));
             }
         }
     }
@@ -345,7 +345,7 @@ function resetGame() {
     bullets = []; enemyBullets = []; currentExits = [true, true, true, true]; asteroids = []; explosions = [];
     screenShake = 0; activeEffectText = ""; effectDisplayTimer = 0; silenceUntil = 0; hitBlinkTimer = 0; scoreSaved = false; virtualKeys = {}; lastShootTime = 0; uiPosition = 0;
     mobileControls.style.display = 'flex'; mazeControls.style.display = 'none'; restartBtn.style.display = 'none'; 
-    if(btnPause) btnPause.style.display = 'flex';
+    if (btnPause) btnPause.style.display = 'flex';
     spawnEnemies(false); saveLastPlayInfo(); playRandomBgm();
 }
 function spawnEnemies(isTrap) {
@@ -515,7 +515,7 @@ function update() {
             }
         }
         if (enemies.length === 0 && explosions.length === 0) {
-            bullets = []; enemyBullets = []; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none';
+            bullets = []; enemyBullets = []; mobileControls.style.display = 'none'; if (btnPause) btnPause.style.display = 'none';
             
             if (stage === 50 && state !== 'ending1_choice') {
                 state = 'ending1'; 
@@ -735,7 +735,7 @@ function makeChoice(idx, dir) {
     state = 'playing'; 
     mobileControls.style.display = 'flex'; 
     mazeControls.style.display = 'none'; 
-    if(btnPause) btnPause.style.display = 'flex'; 
+    if (btnPause) btnPause.style.display = 'flex'; 
     
     spawnEnemies(isTrapNext); 
     saveLastPlayInfo(); 
@@ -752,7 +752,7 @@ function handlePlayerDeath() { if (player.shield > 0) {
     playExplosionSound(); // 피격(폭발) 소리 재생
     hitBlinkTimer = 60;   // 피격 무적 시간
     if (lives <= 0)       // (이 뒤의 사망 처리 기존 코드는 그대로 유지)
- { state = 'gameover'; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); } else { player.weaponLevel = Math.max(1, player.weaponLevel - 1); permanentWeaponSpeedLevel = Math.max(0, permanentWeaponSpeedLevel - 1); player.shield = 0; } }
+ { state = 'gameover'; mobileControls.style.display = 'none'; if (btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); } else { player.weaponLevel = Math.max(1, player.weaponLevel - 1); permanentWeaponSpeedLevel = Math.max(0, permanentWeaponSpeedLevel - 1); player.shield = 0; } }
 }
 function loop() { if (!isPaused) update(); draw(); requestAnimationFrame(loop); }
 function handleStartScreen(e) { 
@@ -793,7 +793,7 @@ document.getElementById('restartBtn').addEventListener('click', (e) => { e.stopP
 function openSettings(e) { e.preventDefault(); e.stopPropagation(); if (state === 'playing') isPaused = true; settingsModal.style.display = 'flex'; }
 document.getElementById('btnSettings').addEventListener('mousedown', openSettings); document.getElementById('btnSettings').addEventListener('touchstart', openSettings, {passive: false});
 document.getElementById('btnResume').addEventListener('click', (e) => { togglePause(e); });
-document.getElementById('btnExitToTitle').addEventListener('click', () => { isPaused = false; settingsModal.style.display = 'none'; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; state = 'start'; stopBgm(); score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
+document.getElementById('btnExitToTitle').addEventListener('click', () => { isPaused = false; settingsModal.style.display = 'none'; mobileControls.style.display = 'none'; if (btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; state = 'start'; stopBgm(); score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
 // --- 보상형 광고 시스템 ---
 let lastAdTime = 0; // 마지막으로 보상을 받은 시간 (기록용)
 const AD_COOLDOWN = 10 * 60 * 1000; // 10분 = 600,000 밀리초
@@ -925,5 +925,16 @@ function handleTouchStop(e) {
 }
 document.addEventListener('touchend', handleTouchStop);
 document.addEventListener('touchcancel', handleTouchStop);
-loop();
+loop(); 
+// 일시정지 버튼 이벤트를 연결.
+const btnPause = document.getElementById('btnPause');
+
+if (btnPause) {
+    // 클릭 이벤트 (PC/마우스)
+    btnPause.addEventListener('click', togglePause);
+    
+    // 터치 이벤트 (모바일/터치)
+    btnPause.addEventListener('touchstart', (e) => {
+        togglePause(e);
+    }, { passive: false }); }
 </script>
