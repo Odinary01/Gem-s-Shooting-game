@@ -298,16 +298,14 @@ btnMusic.addEventListener('mousedown', toggleMusic); btnMusic.addEventListener('
 function togglePause(e) {
     if (e) { 
         e.preventDefault(); 
-        e.stopPropagation(); // ★ 클릭 신호가 배경으로 전달되는 것을 완벽히 차단합니다.
+        e.stopPropagation(); 
     }
     
     if (state === 'playing') { 
         isPaused = !isPaused; 
         if (isPaused) {
-            settingsModal.style.display = 'flex';
             bgmAudio.pause();
         } else {
-            settingsModal.style.display = 'none';
             if (!isMusicMuted && !isVoidArea) {
                 bgmAudio.play().catch(err => console.log(err));
             }
@@ -633,7 +631,13 @@ function draw() {
         if (effectDisplayTimer > 0) { ctx.fillStyle = 'yellow'; ctx.font = 'bold 30px Arial'; ctx.textAlign = 'center'; ctx.fillText(activeEffectText, canvas.width / 2, canvas.height / 2); effectDisplayTimer--; }
         
         // 포즈 텍스트
-        if (isPaused) { ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = 'yellow'; ctx.font = 'bold 40px Arial'; ctx.textAlign = 'center'; ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2); }
+        if (isPaused && settingsModal.style.display !== 'flex') { 
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height); 
+            ctx.fillStyle = 'yellow'; 
+            ctx.font = 'bold 40px Arial'; 
+            ctx.textAlign = 'center'; 
+            ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2); }
     } else if (state === 'choosing') { drawUI(); ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", 300, 100); ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", 300, 150); }
       else if (state === 'ending1' || state === 'ending1_choice') {
         endingTimer++;
@@ -796,7 +800,7 @@ const container = document.getElementById('gameContainer'); container.addEventLi
 document.getElementById('restartBtn').addEventListener('click', (e) => { e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
 function openSettings(e) { e.preventDefault(); e.stopPropagation(); if (state === 'playing') isPaused = true; settingsModal.style.display = 'flex'; }
 document.getElementById('btnSettings').addEventListener('mousedown', openSettings); document.getElementById('btnSettings').addEventListener('touchstart', openSettings, {passive: false});
-document.getElementById('btnResume').addEventListener('click', (e) => { togglePause(e); });
+document.getElementById('btnResume').addEventListener('click', (e) => { settingsModal.style.display = 'none'; if (isPaused) togglePause(e); });
 document.getElementById('btnExitToTitle').addEventListener('click', () => { isPaused = false; settingsModal.style.display = 'none'; mobileControls.style.display = 'none'; if (btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; state = 'start'; stopBgm(); score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
 // --- 보상형 광고 시스템 ---
 let lastAdTime = 0; // 마지막으로 보상을 받은 시간 (기록용)
