@@ -192,13 +192,13 @@ const btnPause = document.getElementById('btnPause');
 const settingsModal = document.getElementById('settingsModal');
 const bgmVolumeSlider = document.getElementById('bgmVolume');
 
-// --- 전역 변수 모음 ---
+// --- 전역 변패들 ---
 let shootBuffer = null; // 총소리 데이터를 담을 그릇
 
 // 사운드 파일 로드 함수
 async function loadShootSound() {
     try {
-        const response = await fetch('lazer.ogg');
+        const response = await fetch('laser.ogg');
         const arrayBuffer = await response.arrayBuffer();
         shootBuffer = await audioCtx.decodeAudioData(arrayBuffer);
     } catch (e) {
