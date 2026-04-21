@@ -184,7 +184,7 @@ for (let i = 0; i < 100; i++) stars.push({ x: Math.random() * 600, y: Math.rando
 const bgmFiles = ['bgm01.mp3', 'bgm02.mp3', 'bgm03.mp3', 'bgm04.mp3', 'bgm05.mp3', 'bgm06.mp3', 'bgm07.mp3', 'bgm08.mp3', 'bgm09.mp3', 'bgm10.mp3', 'bgm11.mp3', 'bgm12.mp3'];
 let bgmAudio = new Audio();
 let isMusicMuted = true;
-let bgmMasterVolume = 0.01;
+let bgmMasterVolume = 0.05;
 
 const canvas = document.getElementById('gameCanvas'), ctx = canvas.getContext('2d');
 const mobileControls = document.getElementById('mobileControls'), mazeControls = document.getElementById('mazeControls'), restartBtn = document.getElementById('restartBtn');
@@ -225,8 +225,7 @@ let lastPlayInfo = { stage: 1, score: 0, lives: 3 };
 try { let savedData = localStorage.getItem('mazeGalagaLastPlay'); if (savedData && savedData !== "undefined") lastPlayInfo = JSON.parse(savedData); } catch(e) {}
 
 let savedVolume = localStorage.getItem('mazeGalagaVolume');
-if (savedVolume !== null) { bgmAudio.volume = parseFloat(savedVolume) * 0.2; bgmVolumeSlider.value = savedVolume; }
-
+if (savedVolume !== null) { bgmVolumeSlider.value = savedVolume; bgmAudio.volume = parseFloat(savedVolume) * bgmMasterVolume; }
 let savedMute = localStorage.getItem('mazeGalagaMuted');
 if (savedMute === 'false') { 
     isMusicMuted = false; 
@@ -235,8 +234,23 @@ if (savedMute === 'false') {
     isMusicMuted = true; 
     btnMusic.style.opacity = "0.5"; 
 }
-bgmAudio.addEventListener('ended', () => { bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.Volume = bgmMasterVolume; bgmAudio.load(); bgmAudio.play().catch(e => console.log(e)); });
-function playRandomBgm() { if (isMusicMuted || isVoidArea || state === 'start') return; if (!bgmAudio.paused) return; bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.Volume = bgmMasterVolume; bgmAudio.load(); bgmAudio.play().catch(e => console.log(e)); }
+// 브금 한 곡이 끝났을 때 다음 곡 설정
+bgmAudio.addEventListener('ended', () => { 
+    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; 
+    bgmAudio.volume = parseFloat(bgmVolumeSlider.value) * bgmMasterVolume; 
+    bgmAudio.load(); 
+    bgmAudio.play().catch(e => console.log(e)); 
+});
+
+// 브금 재생 함수
+function playRandomBgm() { 
+    if (isMusicMuted || isVoidArea || state === 'start') return; 
+    if (!bgmAudio.paused) return; 
+    bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; 
+    bgmAudio.volume = parseFloat(bgmVolumeSlider.value) * bgmMasterVolume; 
+    bgmAudio.load(); 
+    bgmAudio.play().catch(e => console.log(e)); 
+}
 function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 function pauseBgm() { bgmAudio.pause(); }
 function initAudio() { if (AudioContextClass && !audioCtx) { audioCtx = new AudioContextClass(); loadShootSound(); } if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
