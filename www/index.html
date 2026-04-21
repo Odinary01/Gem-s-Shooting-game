@@ -276,10 +276,10 @@ function getGachaPool() {
         { name: " Weapon pod -1", type: "debuff", apply: () => { player.weaponLevel = Math.max(1, player.weaponLevel - 1); } },
         { name: " Pods overheated", type: "debuff", apply: () => { portOverheatMultiplier = 2; } },
         { name: " EMP! (Pods down)", type: "debuff", apply: () => { silenceUntil = Date.now() + Math.floor(Math.random() * 20000) + 10000; } },
-        { name: " Enemy speed up", type: "debuff", apply: () => { stageEnemySpeedMod = 0.5; } },
+        { name: " Enemies speed Up", type: "debuff", apply: () => { stageEnemySpeedMod = 0.5; } },
         { name: " Engine overheated", type: "debuff", apply: () => { player.speed = 1; } },
-        { name: " Enemy armor buff", type: "debuff", apply: () => { stageEnemyHpMod = 0.5; } },
-        { name: " Increased Enemy!", type: "debuff", apply: () => { isTrapNext = true; } },
+        { name: " Enemies armor buff", type: "debuff", apply: () => { stageEnemyHpMod = 0.5; } },
+        { name: " Increased Enemies!", type: "debuff", apply: () => { isTrapNext = true; } },
         { name: " Void area", type: "neutral", apply: () => { isVoidArea = true; } }
     ];
     if (stage >= 50) pool.push({ name: " Space compression (Wall)", type: "debuff", apply: () => { currentWallThickness = Math.floor(Math.random() * 10) + 1; } });
