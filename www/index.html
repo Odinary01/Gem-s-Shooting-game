@@ -193,6 +193,18 @@ const settingsModal = document.getElementById('settingsModal');
 const bgmVolumeSlider = document.getElementById('bgmVolume');
 
 // --- 전역 변수 모음 ---
+let shootBuffer = null; // 총소리 데이터를 담을 그릇
+
+// 사운드 파일 로드 함수
+async function loadShootSound() {
+    try {
+        const response = await fetch('lazer.ogg');
+        const arrayBuffer = await response.arrayBuffer();
+        shootBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    } catch (e) {
+        console.log("사운드 로드 실패: ", e);
+    }
+}
 let state = 'start', score = 0, lives = 3, stage = 1, isPaused = false;
 const basePlayerSpeed = 2, baseShootCooldown = 400;
 let permanentWeaponSpeedLevel = 0, permanentPlayerSpeed = basePlayerSpeed, portOverheatMultiplier = 1, currentWallThickness = 0;
@@ -226,20 +238,23 @@ bgmAudio.addEventListener('ended', () => { bgmAudio.src = bgmFiles[Math.floor(Ma
 function playRandomBgm() { if (isMusicMuted || isVoidArea || state === 'start') return; if (!bgmAudio.paused) return; bgmAudio.src = bgmFiles[Math.floor(Math.random() * bgmFiles.length)]; bgmAudio.play().catch(e => console.log(e)); }
 function stopBgm() { bgmAudio.pause(); bgmAudio.currentTime = 0; }
 function pauseBgm() { bgmAudio.pause(); }
-function initAudio() { if (AudioContextClass && !audioCtx) audioCtx = new AudioContextClass(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
+function initAudio() { if (AudioContextClass && !audioCtx) { audioCtx = new AudioContextClass(); loadShootSound(); } if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }
 function playShootSound() { 
-    if (!audioCtx || isVoidArea) return;
-    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); 
-    osc.type = 'triangle'; 
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    const t = audioCtx.currentTime + 0.01; 
-    osc.frequency.setValueAtTime(600, t); 
-    osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
-    
-    // 소리가 끝날 때 뚝 끊기지 않고 자연스럽게 사라지도록(Fade-out) 조절
-    gain.gain.setValueAtTime(0.05, t); 
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);     
-    osc.start(t); osc.stop(t + 0.1);
+    // 오디오 설정이 꺼져있거나, 보이드 영역이거나, 사운드가 아직 로드 안 됐으면 리턴
+    if (!audioCtx || isVoidArea || !shootBuffer) return;
+
+    // 재생용 소스 노드 생성
+    const source = audioCtx.createBufferSource();
+    source.buffer = shootBuffer;
+
+    // 볼륨 조절
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime); 
+
+    source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    source.start(0);
 }
 function playExplosionSound() {
     if (!audioCtx || isVoidArea) return;
