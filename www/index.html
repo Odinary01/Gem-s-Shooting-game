@@ -570,17 +570,20 @@ function draw() {
             ctx.beginPath(); ctx.arc(smokeX, smokeY, radius, 0, Math.PI * 2); ctx.fill();
         }
 
-        // 착륙한 전투기 & 내린 주인공
-        ctx.drawImage(playerTempImg, 120, canvas.height - 180, 60, 60);
-        ctx.fillStyle = "black"; ctx.fillRect(200, canvas.height - 150, 10, 20); // 몸통
-        ctx.beginPath(); ctx.arc(205, canvas.height - 155, 6, 0, Math.PI*2); ctx.fill(); // 머리
-
+        // ★ 수정됨: 화면 어둡게 덮기를 기체/조종사 그리기보다 먼저 실행
         if (state === 'ending1') {
             ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.fillStyle = 'white'; ctx.textAlign = 'center'; ctx.font = 'bold 24px Arial';
-            ctx.fillText("The earth was already in ruins...", canvas.width/2, canvas.height/2);
+            ctx.fillText("The Earth has been destroyed...", canvas.width/2, canvas.height/2);
             ctx.font = '16px Arial'; ctx.fillText("- TOUCH TO CONTINUE -", canvas.width/2, canvas.height/2 + 40);
         }
+
+        ctx.drawImage(playerTempImg, 120, canvas.height - 180, 60, 60);
+        ctx.fillStyle = "#dddddd"; // 조종사 몸통 (밝은 우주복 느낌)
+        ctx.fillRect(200, canvas.height - 150, 10, 20); 
+        ctx.fillStyle = "#ffffff"; // 조종사 헬멧 (흰색)
+        ctx.beginPath(); ctx.arc(205, canvas.height - 155, 6, 0, Math.PI*2); ctx.fill(); 
+
     } else if (state === 'ending2') {
         endingTimer++;
         // 배경: 푸르고 맑은 자연 행성
@@ -603,10 +606,13 @@ function draw() {
         ctx.fillStyle = 'white'; ctx.font = 'bold 24px Arial';
         ctx.fillText("What will you do?", canvas.width/2, canvas.height/2 + 15);
         
-        if (endingTimer > 100) {
-            restartBtn.style.display = 'flex'; restartBtn.innerText = "FINISH (TO TITLE)";
+            if (endingTimer > 100) {
+            restartBtn.style.display = 'flex'; 
+            restartBtn.innerText = "FINISH (TO TITLE)";
+            restartBtn.style.bottom = "auto"; 
+            restartBtn.style.top = "15%"; 
         }
-    }
+}
     else if (state === 'gameover' || state === 'missioncomplete') { ctx.fillStyle = state === 'missioncomplete' ? 'yellow' : 'red'; ctx.textAlign = 'center'; ctx.font = 'bold 40px Arial'; ctx.fillText(state === 'missioncomplete' ? "I SALUTE YOU!" : "GAME OVER", 300, 100); ctx.fillStyle = 'white'; ctx.font = '20px Arial'; ctx.fillText(`My score Stage: ${stage} | Score: ${score}`, 300, 150); ctx.fillStyle = '#00ffff'; ctx.font = '22px Arial'; ctx.fillText("LEADERBOARD", 300, 200); if (leaderboards.length === 0) ctx.fillText("No Record", 300, 250); else leaderboards.forEach((e, i) => { ctx.fillText(`${i + 1}. ${e.name} ${e.score} (St ${e.stage})`, 300, 250 + (i * 30)); }); }
     ctx.restore(); }
 function generateNextRoom() { return [Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2, Math.random() > 0.2].map(x => x || true); }
@@ -649,11 +655,15 @@ document.getElementById('btnContinue51').addEventListener('click', (e) => {
 });
 
 // 타이틀 귀환 버튼
-document.getElementById('btnEndingTitle').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('ending1Choice').style.display = 'none';
-    saveScore(); // 50스테이지 점수 기록
-    state = 'start'; stopBgm(); score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height);
+document.getElementById('restartBtn').addEventListener('click', (e) => { 
+    e.stopPropagation(); 
+    state = 'start'; 
+    stopBgm(); 
+    restartBtn.style.display = 'none'; 
+    restartBtn.style.top = 'auto'; 
+    restartBtn.style.bottom = '250px'; 
+    score = 0; lives = 3; stage = 1; 
+    ctx.clearRect(0, 0, canvas.width, canvas.height); 
 });
 const container = document.getElementById('gameContainer'); container.addEventListener('mousedown', handleStartScreen); container.addEventListener('touchstart', handleStartScreen, {passive: false});
 document.getElementById('restartBtn').addEventListener('click', (e) => { e.stopPropagation(); state = 'start'; stopBgm(); restartBtn.style.display = 'none'; score = 0; lives = 3; stage = 1; ctx.clearRect(0, 0, canvas.width, canvas.height); });
