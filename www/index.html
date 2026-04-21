@@ -464,10 +464,10 @@ function update() {
         if (enemies.length === 0 && explosions.length === 0) {
             bullets = []; enemyBullets = []; mobileControls.style.display = 'none'; if(btnPause) btnPause.style.display = 'none';
             
-            if (stage === 1 && state !== 'ending1_choice') {
+            if (stage === 50 && state !== 'ending1_choice') {
                 state = 'ending1'; 
                 endingTimer = 0;
-            } else if (stage >= 2) {
+            } else if (stage >= 100) {
                 state = 'ending2'; 
                 endingTimer = 0;
                 saveScore();
