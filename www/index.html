@@ -294,23 +294,17 @@ function toggleMusic(e) {
     if (isMusicMuted) pauseBgm(); 
     else if (state !== 'start' && !isVoidArea) playRandomBgm(); 
 }
-btnMusic.addEventListener('mousedown', toggleMusic); btnMusic.addEventListener('touchstart', toggleMusic, {passive: false});
+btnMusic.addEventListener('mousedown', toggleMusic); btnMusic.addEventListener('touchstart', toggleMusic, {passive: false}); 
 function togglePause(e) {
     if (e) { 
         e.preventDefault(); 
-        e.stopPropagation(); 
-    }
-    
-    if (state === 'playing') { 
-        isPaused = !isPaused; 
-        if (isPaused) {
-            bgmAudio.pause();
-        } else {
-            if (!isMusicMuted && !isVoidArea) {
-                bgmAudio.play().catch(err => console.log(err));
-            }
-        }
-    }
+        e.stopPropagation(); }
+
+    // 설정창이 열려있으면 포즈 버튼의 기능을 완전히 차단!
+    if (settingsModal.style.display === 'flex') { return; }
+    if (state === 'playing') { isPaused = !isPaused; 
+    if (isPaused) { bgmAudio.pause(); } else {
+    if (!isMusicMuted && !isVoidArea) { bgmAudio.play().catch(err => console.log(err)); } } } 
 }
 bgmVolumeSlider.addEventListener('input', (e) => { 
     bgmAudio.volume = parseFloat(e.target.value) * bgmMasterVolume; 
