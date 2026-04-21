@@ -482,13 +482,17 @@ function update() {
 }
 function drawUI() {
     let uiText = `Stage: ${stage} | Score: ${score} | Armor: ${lives}`;
-    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}초`;
+    if (Date.now() < silenceUntil) uiText += ` | EMP: ${Math.ceil((silenceUntil - Date.now()) / 1000)}sec`;
+    
+    // ★ 이번 스테이지에서 뽑은 버프/디버프 텍스트를 상시 표기
+    if (activeEffectText !== "") {
+        uiText += ` | 🎲 ${activeEffectText.trim()}`;
+    }
     
     ctx.save();
     ctx.fillStyle = 'white'; 
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'left'; 
-    
+    ctx.font = '18px Arial'; 
+    ctx.textAlign = 'left';     
     if (uiPosition === 0) { 
         // 상단: 머리가 위(바깥)를 향함
         ctx.translate(10, 30);
