@@ -547,7 +547,7 @@ function draw() {
         
         // 포즈 텍스트
         if (isPaused) { ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = 'yellow'; ctx.font = 'bold 40px Arial'; ctx.textAlign = 'center'; ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2); }
-    } else if (state === 'choosing') { ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", 300, 100); ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", 300, 150); }
+    } else if (state === 'choosing') { drawUI(); ctx.fillStyle = 'yellow'; ctx.textAlign = 'center'; ctx.font = 'bold 36px Arial'; ctx.fillText("Area Clear!", 300, 100); ctx.font = '22px Arial'; ctx.fillText("Choose the Next Area.", 300, 150); }
       else if (state === 'ending1' || state === 'ending1_choice') {
         endingTimer++;
         // 배경: 잿빛의 파괴된 지구
