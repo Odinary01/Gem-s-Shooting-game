@@ -1,5 +1,9 @@
 {
   "appId": "com.odinarygame.gsg",
   "appName": "Gem's shooting game",
+<<<<<<< HEAD
   "webDir": "gsg"
+=======
+  "webDir": "GSG"
+>>>>>>> eac313ed37487d731c10f3d22a0c47b2dee9e6c1
 }
