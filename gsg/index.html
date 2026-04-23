@@ -757,7 +757,18 @@ function handlePlayerDeath() { if (player.shield > 0) {
     if (lives <= 0)       // (이 뒤의 사망 처리 기존 코드는 그대로 유지)
  { state = 'gameover'; mobileControls.style.display = 'none'; if (btnPause) btnPause.style.display = 'none'; mazeControls.style.display = 'none'; restartBtn.style.display = 'flex'; saveScore(); } else { player.weaponLevel = Math.max(1, player.weaponLevel - 1); permanentWeaponSpeedLevel = Math.max(0, permanentWeaponSpeedLevel - 1); player.shield = 0; } }
 }
-function loop() { if (!isPaused) update(); draw(); requestAnimationFrame(loop); }
+function loop() { 
+    if (!isPaused) update(); 
+    draw(); 
+    if (state === 'ending1' || state === 'ending1_choice' || state === 'ending2') {
+        document.getElementById('btnSettings').style.display = 'none';
+        document.getElementById('btnWatchAd').style.display = 'none';
+    } else {
+        document.getElementById('btnSettings').style.display = 'flex';
+        document.getElementById('btnWatchAd').style.display = 'block';
+    }
+    requestAnimationFrame(loop); 
+}
 function handleStartScreen(e) { 
     if (e && e.target && (e.target.closest('#btnSettings') || e.target.closest('#settingsModal') || e.target.closest('#btnPause') || e.target.closest('#btnMusic'))) return; 
     
