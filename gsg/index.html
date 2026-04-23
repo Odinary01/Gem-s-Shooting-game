@@ -764,9 +764,10 @@ function handleStartScreen(e) {
     if (state === 'start') { 
         initAudio(); resetGame(); 
     } else if (state === 'ending1') { 
-        // 엔딩 1 화면을 터치하면 선택창 띄우기
-        state = 'ending1_choice'; 
-        document.getElementById('ending1Choice').style.display = 'flex'; 
+        state = 'ending1_choice';         
+        setTimeout(() => {
+            document.getElementById('ending1Choice').style.display = 'flex'; 
+        }, 500);
     } 
 }
 
